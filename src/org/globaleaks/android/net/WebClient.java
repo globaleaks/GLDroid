@@ -1,36 +1,25 @@
-package org.globaleaks.android;
+package org.globaleaks.android.net;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.FileEntity;
-import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
+import org.globaleaks.android.MultipartEntity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Images.ImageColumns;
 import android.util.Log;
 
 public class WebClient {
@@ -82,16 +71,14 @@ public class WebClient {
         String title = bundle.getString("title");
         String desc = bundle.getString("description");
         HttpPost post = new HttpPost("http://"+baseUrl+"/submit");
-        MultipartEntity sme = new MultipartEntity();
-        sme.addPart("Title", title);
-        sme.addPart("Description", desc);
-        sme.addPart("disclaimer", "on");
-//        sme.addPart("file", "", null);
-//        sme.addPart("material", "", null);
-        sme.addPart("_formkey", formKey);
-        sme.addPart("_formname", "default");
-        sme.addPart("submit", "send request");
-        post.setEntity(sme);
+        MultipartEntity me = new MultipartEntity();
+        me.addPart("Title", title);
+        me.addPart("Description", desc);
+        me.addPart("disclaimer", "on");
+        me.addPart("_formkey", formKey);
+        me.addPart("_formname", "default");
+        me.addPart("submit", "send request");
+        post.setEntity(me);
         try {
             HttpResponse resp = http.execute(post);
             HttpEntity he = resp.getEntity();
@@ -120,23 +107,34 @@ public class WebClient {
         try {
             String originalImageFilePath = null;
             String[] columnsToSelect = { MediaStore.Images.Media.DATA };
-            Cursor imageCursor = ctx.getContentResolver().query(Uri.parse(imgUri), columnsToSelect, null, null, null );
-            if ( imageCursor != null && imageCursor.getCount() == 1 ) {
-                imageCursor.moveToFirst();
-                originalImageFilePath = imageCursor.getString(imageCursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            cursor = ctx.getContentResolver().query(Uri.parse(imgUri), columnsToSelect, null, null, null );
+            if ( cursor != null && cursor.getCount() == 1 ) {
+                cursor.moveToFirst();
+                originalImageFilePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
             }
             File f = new File(originalImageFilePath);
             size = f.length();
         } catch (Exception e) {
             if(cursor != null) cursor.close();
+            throw e;
         }
         
-        HttpPost post = new HttpPost("http://"+baseUrl+"/globaleaks/submission/upload?qqfile=image.png");
-        InputStreamEntity entity = new InputStreamEntity(input, size);
-        post.setEntity(entity);
-        HttpResponse resp = http.execute(post);
-        HttpEntity he = resp.getEntity();
-        System.out.println(convertStreamToString(he.getContent()));
+        try {
+            HttpPost post = new HttpPost("http://"+baseUrl+"/globaleaks/submission/upload?qqfile=image.png");
+            //InputStreamEntity entity = new InputStreamEntity(input, size);
+            FilterStreamEntity entity = new FilterStreamEntity(input, size, new ProgressListener() {
+                @Override
+                public void transferred(long num) {
+                    Log.i(LOG_TAG, "Transferred " + num + " bytes");
+                }
+            });
+            post.setEntity(entity);
+            HttpResponse resp = http.execute(post);
+            HttpEntity he = resp.getEntity();
+            System.out.println(convertStreamToString(he.getContent()));
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error uploading file", e);
+        }
     }
 
 
@@ -162,9 +160,6 @@ public class WebClient {
         HttpGet get = new HttpGet("http://"+baseUrl+"/submit");
         try {
             HttpResponse response = http.execute(get);
-            Header[] headers = response.getAllHeaders();
-            //headers[0].
-            
             HttpEntity entity = response.getEntity();
             String form = convertStreamToString(entity.getContent());
             int idx = form.indexOf("_formkey");

@@ -1,9 +1,9 @@
 package org.globaleaks.android;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+
+import org.globaleaks.android.net.WebClient;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -12,10 +12,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -48,6 +46,7 @@ implements OnClickListener
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(LOG_TAG, "onCreate()");
         setLayout();
     }
 
@@ -99,7 +98,7 @@ implements OnClickListener
             values.put(MediaStore.Images.Media.TITLE, TMP_IMAGE);
             values.put(MediaStore.Images.Media.DESCRIPTION,"globaleaks");
             uriImageResult = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE );
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             intent.putExtra( MediaStore.EXTRA_OUTPUT, uriImageResult);
             startActivityForResult(intent, CODE_TAKE_IMG);
 
