@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent" android:weightSum="1">
+	
+	<ImageView android:id="@+id/imageView1" android:src="@drawable/logo"
+		android:layout_height="49dp" android:layout_width="match_parent"
+		android:layout_margin="10dp"></ImageView>
+	<TextView android:textAppearance="?android:attr/textAppearanceLarge"
+		android:layout_height="wrap_content" android:layout_width="match_parent"
+		android:id="@+id/submitTitleLabel" android:text="@string/submitTitleLabel"></TextView>
+	<EditText android:layout_height="wrap_content"
+		android:layout_width="match_parent" android:id="@+id/submitTitleText">
+		<requestFocus></requestFocus>
+	</EditText>
+	<TextView android:textAppearance="?android:attr/textAppearanceLarge"
+		android:layout_height="wrap_content" android:layout_width="match_parent"
+		android:id="@+id/submitDescriptionLabel" android:text="@string/submitDescriptionLabel"></TextView>
+	<EditText android:layout_height="wrap_content"
+		android:layout_width="match_parent" android:inputType="textMultiLine"
+		android:id="@+id/submitDescriptionText" android:gravity="top"
+		android:layout_weight="0.82"></EditText>
+	<LinearLayout android:orientation="horizontal"
+		android:gravity="center_vertical|center_horizontal"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:layout_margin="10dp">
+		<Button android:id="@+id/takePictureButton"
+			android:drawableTop="@drawable/ic_camera" android:text="Take Photo"
+			android:layout_marginRight="15dp" android:layout_height="match_parent"
+			android:layout_width="125dp"></Button>
+		<Button android:id="@+id/selectPictureButton"
+			android:drawableTop="@drawable/ic_gallery" android:layout_marginLeft="15dp"
+			android:text="Select Photo" android:layout_height="match_parent"
+			android:layout_width="125dp"></Button>
+	</LinearLayout>
+	<Button android:layout_gravity="center" android:id="@+id/submitButton"
+		android:layout_height="wrap_content" android:text="@string/submitButtonLabel"
+		android:layout_weight="0.12" android:layout_width="108dp"></Button>
+</LinearLayout>

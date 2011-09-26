@@ -1,0 +1,204 @@
+package org.globaleaks.android;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.provider.MediaStore.Images.ImageColumns;
+import android.util.Log;
+
+public class WebClient {
+
+    private static final String LOG_TAG = "WebClient";
+    
+    private HttpClient http;
+    private String baseUrl;
+    
+    public WebClient(String baseUrl) {
+        http = new DefaultHttpClient();
+        this.baseUrl = baseUrl;
+    }
+    
+
+    /** Form structure for submission:
+     
+    <form action="" enctype="multipart/form-data" method="post">
+        <table><tr><td>Title</td><td>
+        <input name="Title" type="text" />
+        <textarea cols="40" name="Description" rows="10"></textarea>
+        <input class="disabled" name="material1" type="file" />
+        <input class="notimplemented" name="metadata" type="checkbox" value="on" />
+        <input name="disclaimer" type="checkbox" value="on" />
+        <input name="submit" type="submit" />
+        <input name="_formkey" type="hidden" value="bfd84fe7-fdc9-4f49-988b-42f55f4d9950" />
+        <input name="_formname" type="hidden" value="default" />
+    </form>
+    */
+    public String submit(Intent data, Activity ctx) {
+        // TODO: asynchronous upload
+        String formKey = parseFormKey();
+        if(formKey == null) {
+            Log.e(LOG_TAG, "Error getting formKey");
+            return null;
+        }
+        Bundle bundle = data.getExtras();
+        String imgUri = bundle.getString("img");
+        if(imgUri != null) {
+            try {
+                upload(imgUri, ctx);   
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "error uploading image", e);
+                return null;
+            }
+            
+        }
+        
+        String title = bundle.getString("title");
+        String desc = bundle.getString("description");
+        HttpPost post = new HttpPost("http://"+baseUrl+"/submit");
+        MultipartEntity sme = new MultipartEntity();
+        sme.addPart("Title", title);
+        sme.addPart("Description", desc);
+        sme.addPart("disclaimer", "on");
+//        sme.addPart("file", "", null);
+//        sme.addPart("material", "", null);
+        sme.addPart("_formkey", formKey);
+        sme.addPart("_formname", "default");
+        sme.addPart("submit", "send request");
+        post.setEntity(sme);
+        try {
+            HttpResponse resp = http.execute(post);
+            HttpEntity he = resp.getEntity();
+            String tulip = parseTulip(he.getContent());
+            if(tulip == null) {
+                Log.e(LOG_TAG, "Error getting/parsing tulip");
+                return null;
+            }
+            return tulip;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private void upload(String imgUri, Activity ctx) throws Exception {
+        /* File upload is done with separate POST request for each file uploaded
+         * to POST /globaleaks/submission/upload?qqfile=filename
+         */
+        
+        InputStream input;
+        input = ctx.getContentResolver().openInputStream(Uri.parse(imgUri));
+
+        Cursor cursor = null;
+        long size = -1;
+        try {
+            String originalImageFilePath = null;
+            String[] columnsToSelect = { MediaStore.Images.Media.DATA };
+            Cursor imageCursor = ctx.getContentResolver().query(Uri.parse(imgUri), columnsToSelect, null, null, null );
+            if ( imageCursor != null && imageCursor.getCount() == 1 ) {
+                imageCursor.moveToFirst();
+                originalImageFilePath = imageCursor.getString(imageCursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            }
+            File f = new File(originalImageFilePath);
+            size = f.length();
+        } catch (Exception e) {
+            if(cursor != null) cursor.close();
+        }
+        
+        HttpPost post = new HttpPost("http://"+baseUrl+"/globaleaks/submission/upload?qqfile=image.png");
+        InputStreamEntity entity = new InputStreamEntity(input, size);
+        post.setEntity(entity);
+        HttpResponse resp = http.execute(post);
+        HttpEntity he = resp.getEntity();
+        System.out.println(convertStreamToString(he.getContent()));
+    }
+
+
+    private String parseTulip(InputStream content) {
+        // TODO: use XML parser to extract tulip ID
+        String response = convertStreamToString(content);
+        String startTag = "class=\"tulip\">";
+        int idx = response.indexOf(startTag);
+        if(idx == -1) {
+            return null;
+        }
+        int idx2 = response.indexOf("</p>", idx);
+        if(idx2 == -1) {
+            return null;
+        }
+        String tulip = response.substring(idx + startTag.length(),idx2).trim();
+        return tulip;
+    }
+
+
+    private String parseFormKey() {
+        //TODO use XML parser to extract form key
+        HttpGet get = new HttpGet("http://"+baseUrl+"/submit");
+        try {
+            HttpResponse response = http.execute(get);
+            Header[] headers = response.getAllHeaders();
+            //headers[0].
+            
+            HttpEntity entity = response.getEntity();
+            String form = convertStreamToString(entity.getContent());
+            int idx = form.indexOf("_formkey");
+            if(idx == -1) return null;
+            String s1 = form.substring(idx);
+            idx = s1.indexOf("value=");
+            if(idx == -1) return null;
+            String s2 = s1.substring(idx + "value=".length());
+            String k = s2.substring(1,37);
+            return k;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    private String convertStreamToString(InputStream is) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return sb.toString();
+    }
+}
+

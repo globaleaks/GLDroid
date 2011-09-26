@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GlobaLeaks Submission</string>
+    <string name="submitTitleLabel">Title</string>
+    <string name="submitDescriptionLabel">Description</string>
+    <string name="submitButtonLabel">Submit</string>
+	<string name="aboutMenu">About</string>
+	<string name="settingsMenu">Settings</string>
+	<string name="gl_site">Globaleaks Site</string>
+	<string name="base_url">base_url</string>
+</resources>
