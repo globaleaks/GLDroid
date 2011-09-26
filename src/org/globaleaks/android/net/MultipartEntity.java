@@ -1,4 +1,4 @@
-package org.globaleaks.android;
+package org.globaleaks.android.net;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

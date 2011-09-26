@@ -12,7 +12,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.globaleaks.android.MultipartEntity;
 import org.globaleaks.android.TulipActivity;
 
 import android.app.Activity;
@@ -106,6 +105,7 @@ public class WebClient {
                 Intent i = new Intent(ctx, TulipActivity.class);
                 i.putExtra("tulip", tulip);
                 ctx.startActivity(i);
+                dialog.dismiss();
             }
             
         };
