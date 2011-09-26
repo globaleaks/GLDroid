@@ -16,6 +16,6 @@
             </intent-filter>
         </activity>
         <activity android:name="org.globaleaks.android.Preferences"></activity>
-
+		<activity android:name="org.globaleaks.android.TulipActivity"></activity>
     </application>
 </manifest>

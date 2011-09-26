@@ -13,11 +13,14 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.globaleaks.android.MultipartEntity;
+import org.globaleaks.android.TulipActivity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -48,26 +51,69 @@ public class WebClient {
         <input name="_formkey" type="hidden" value="bfd84fe7-fdc9-4f49-988b-42f55f4d9950" />
         <input name="_formname" type="hidden" value="default" />
     </form>
+     * @throws Exception 
     */
-    public String submit(Intent data, Activity ctx) {
-        // TODO: asynchronous upload
-        String formKey = parseFormKey();
+    public void submit(Intent data, final Activity ctx) throws Exception {
+        final String formKey = parseFormKey();
         if(formKey == null) {
             Log.e(LOG_TAG, "Error getting formKey");
-            return null;
+            return;
         }
-        Bundle bundle = data.getExtras();
+        final Bundle bundle = data.getExtras();
         String imgUri = bundle.getString("img");
-        if(imgUri != null) {
-            try {
-                upload(imgUri, ctx);   
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "error uploading image", e);
-                return null;
+        final long imgSize = getImageSize(imgUri, ctx);
+        final InputStream input = ctx.getContentResolver().openInputStream(Uri.parse(imgUri));
+        final HttpPost post = new HttpPost("http://"+baseUrl+"/globaleaks/submission/upload?qqfile=image.png");
+        final ProgressDialog dialog = new ProgressDialog(ctx);
+        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        dialog.setTitle("Submission");
+        dialog.setMessage("Uploading material...");
+        dialog.show();
+        AsyncTask<HttpPost, Long, Boolean> task = new AsyncTask<HttpPost, Long, Boolean>() {
+            private String tulip;
+
+            @Override
+            protected void onProgressUpdate(Long... values) {
+                if(values == null || values[0] == null) return;
+                dialog.setProgress(values[0].intValue());
+            }
+
+            @Override
+            protected Boolean doInBackground(HttpPost... post) {
+                tulip = submitLeak(formKey, bundle);
+                try {
+                    FilterStreamEntity entity = new FilterStreamEntity(input, imgSize, new ProgressListener() {
+                        @Override
+                        public void transferred(long num) {
+                            Log.i(LOG_TAG, "Transferred " + num + " bytes");
+                            long progress = num * 100 / imgSize;
+                            publishProgress(progress);
+                        }
+                    });
+                    post[0].setEntity(entity);
+                    HttpResponse resp = http.execute(post[0]);
+                    HttpEntity he = resp.getEntity();
+                    System.out.println(convertStreamToString(he.getContent()));
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Error uploading file", e);
+                    return null;
+                }
+                return true;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean result) {
+                Intent i = new Intent(ctx, TulipActivity.class);
+                i.putExtra("tulip", tulip);
+                ctx.startActivity(i);
             }
             
-        }
-        
+        };
+        task.execute(post);
+    }
+
+
+    private String submitLeak(String formKey, Bundle bundle) {
         String title = bundle.getString("title");
         String desc = bundle.getString("description");
         HttpPost post = new HttpPost("http://"+baseUrl+"/submit");
@@ -94,14 +140,10 @@ public class WebClient {
         return null;
     }
 
-    private void upload(String imgUri, Activity ctx) throws Exception {
+    private long getImageSize(String imgUri, Activity ctx) throws Exception {
         /* File upload is done with separate POST request for each file uploaded
          * to POST /globaleaks/submission/upload?qqfile=filename
          */
-        
-        InputStream input;
-        input = ctx.getContentResolver().openInputStream(Uri.parse(imgUri));
-
         Cursor cursor = null;
         long size = -1;
         try {
@@ -118,24 +160,8 @@ public class WebClient {
             if(cursor != null) cursor.close();
             throw e;
         }
-        
-        try {
-            HttpPost post = new HttpPost("http://"+baseUrl+"/globaleaks/submission/upload?qqfile=image.png");
-            //InputStreamEntity entity = new InputStreamEntity(input, size);
-            FilterStreamEntity entity = new FilterStreamEntity(input, size, new ProgressListener() {
-                @Override
-                public void transferred(long num) {
-                    Log.i(LOG_TAG, "Transferred " + num + " bytes");
-                }
-            });
-            post.setEntity(entity);
-            HttpResponse resp = http.execute(post);
-            HttpEntity he = resp.getEntity();
-            System.out.println(convertStreamToString(he.getContent()));
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Error uploading file", e);
-        }
-    }
+        return size;
+    } 
 
 
     private String parseTulip(InputStream content) {

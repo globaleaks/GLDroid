@@ -77,12 +77,11 @@ implements OnClickListener
             bundle.putString("title", title.getText().toString());
             bundle.putString("description", desc.getText().toString());
             intent.putExtras(bundle);
-            // TODO: implement submission in a separate Activity, with progress indicator
-            String tulip = client.submit(intent, this);
-            if(tulip == null) {
+            try {
+                client.submit(intent, this);
+            } catch (Exception e) {
+                e.printStackTrace();
                 showDialog( "Error submitting data");
-            } else {
-                showDialog("Your tulip is: " + tulip);
             }
         } else if (view == selectPicture) {
             try {
@@ -126,18 +125,6 @@ implements OnClickListener
         } else {
             setLayout();
         }
-    }
-
-    private void putInBundle(Bitmap bmp) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
-            Log.i(LOG_TAG, "image.width="+bmp.getWidth()+", height="+bmp.getHeight());
-            bmp.compress(CompressFormat.PNG, 100, baos);
-            baos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        bundle.putByteArray("img", baos.toByteArray());
     }
 
     @Override
