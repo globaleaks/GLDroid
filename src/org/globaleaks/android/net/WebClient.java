@@ -14,18 +14,15 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.globaleaks.android.MainActivity;
-import org.globaleaks.android.R;
 import org.globaleaks.android.TulipActivity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
 
@@ -227,7 +224,8 @@ public class WebClient {
         String line = null;
         try {
             while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
+                sb.append(line);
+                sb.append("\n");
             }
         } catch (IOException e) {
             e.printStackTrace();

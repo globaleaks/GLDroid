@@ -25,7 +25,7 @@ public class MultipartEntity implements HttpEntity {
 
     private static final String TAG = "SME";
     
-    private final static char[] MULTIPART_CHARS = "-_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    private static final char[] MULTIPART_CHARS = "-_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         .toCharArray();
 
     private String boundary = null;
