@@ -58,7 +58,8 @@ public class WebClient {
         <input name="_formkey" type="hidden" value="bfd84fe7-fdc9-4f49-988b-42f55f4d9950" />
         <input name="_formname" type="hidden" value="default" />
     </form>
-     * @throws Exception 
+     * @param data
+     * @throws Exception
     */
     public void submit(Intent data) throws Exception {
         final Bundle bundle = data.getExtras();
@@ -225,7 +226,7 @@ public class WebClient {
         try {
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
-                sb.append("\n");
+                sb.append('\n');
             }
         } catch (IOException e) {
             e.printStackTrace();
