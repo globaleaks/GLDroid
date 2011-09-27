@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.PublicKey;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -53,22 +54,14 @@ public class WebClient {
      * @throws Exception 
     */
     public void submit(Intent data, final Activity ctx) throws Exception {
-        final String formKey = parseFormKey();
-        if(formKey == null) {
-            Log.e(LOG_TAG, "Error getting formKey");
-            return;
-        }
         final Bundle bundle = data.getExtras();
-        String imgUri = bundle.getString("img");
-        final long imgSize = getImageSize(imgUri, ctx);
-        final InputStream input = ctx.getContentResolver().openInputStream(Uri.parse(imgUri));
-        final HttpPost post = new HttpPost("http://"+baseUrl+"/globaleaks/submission/upload?qqfile=image.png");
+        final String imgUri = bundle.getString("img");
         final ProgressDialog dialog = new ProgressDialog(ctx);
         dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         dialog.setTitle("Submission");
         dialog.setMessage("Uploading material...");
         dialog.show();
-        AsyncTask<HttpPost, Long, Boolean> task = new AsyncTask<HttpPost, Long, Boolean>() {
+        AsyncTask<Void, Long, Boolean> task = new AsyncTask<Void, Long, Boolean>() {
             private String tulip;
 
             @Override
@@ -78,19 +71,36 @@ public class WebClient {
             }
 
             @Override
-            protected Boolean doInBackground(HttpPost... post) {
+            protected Boolean doInBackground(Void...voids) {
+                publishProgress(0L);
+                final String formKey = parseFormKey();
+                publishProgress(10L);
+                if(formKey == null) {
+                    Log.e(LOG_TAG, "Error getting formKey");
+                    return false;
+                }
                 tulip = submitLeak(formKey, bundle);
+                publishProgress(20L);
                 try {
+                    if(imgUri == null) {
+                        publishProgress(100L);
+                        return true;
+                    }
+                    final long imgSize = getImageSize(imgUri, ctx);
+                    InputStream input = ctx.getContentResolver().openInputStream(Uri.parse(imgUri));
+                    HttpPost post = new HttpPost("http://"+baseUrl+"/globaleaks/submission/upload?qqfile=image.png");
+                    final long offset = 20L;
                     FilterStreamEntity entity = new FilterStreamEntity(input, imgSize, new ProgressListener() {
                         @Override
                         public void transferred(long num) {
                             Log.i(LOG_TAG, "Transferred " + num + " bytes");
-                            long progress = num * 100 / imgSize;
-                            publishProgress(progress);
+                            long progress = num * 70 / imgSize;
+                            publishProgress(progress + offset);
                         }
                     });
-                    post[0].setEntity(entity);
-                    HttpResponse resp = http.execute(post[0]);
+                    post.setEntity(entity);
+                    HttpResponse resp = http.execute(post);
+                    publishProgress(100L);
                     HttpEntity he = resp.getEntity();
                     System.out.println(convertStreamToString(he.getContent()));
                 } catch (Exception e) {
@@ -109,7 +119,7 @@ public class WebClient {
             }
             
         };
-        task.execute(post);
+        task.execute();
     }
 
 
@@ -158,7 +168,6 @@ public class WebClient {
             size = f.length();
         } catch (Exception e) {
             if(cursor != null) cursor.close();
-            throw e;
         }
         return size;
     } 
