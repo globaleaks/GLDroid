@@ -30,8 +30,8 @@ public class WebClient {
 
     private static final String LOG_TAG = "WebClient";
     
-    private DefaultHttpClient http;
-    private String baseUrl;
+    private final DefaultHttpClient http;
+    private final String baseUrl;
     private final Activity ctx;
     
     public WebClient(String baseUrl, MainActivity ctx) {

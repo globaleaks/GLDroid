@@ -30,12 +30,12 @@ public class MultipartEntity implements HttpEntity {
 
     private String boundary = null;
 
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    final ByteArrayOutputStream out = new ByteArrayOutputStream();
     boolean isSetLast = false;
     boolean isSetFirst = false;
 
     public MultipartEntity() {
-        final StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         final Random rand = new Random();
         for (int i = 0; i < 30; i++) {
             buf.append(MULTIPART_CHARS[rand.nextInt(MULTIPART_CHARS.length)]);
