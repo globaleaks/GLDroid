@@ -1,8 +1,5 @@
 package org.globaleaks.android;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
 import org.globaleaks.android.net.WebClient;
 
 import android.app.Activity;
@@ -10,8 +7,6 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;

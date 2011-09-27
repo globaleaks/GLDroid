@@ -9,4 +9,6 @@
 	<string name="gl_site">Globaleaks Site</string>
 	<string name="base_url">base_url</string>
 	<string name="tulipLabel">Tulip:</string>
+	<string name="shareButtonText">Share</string>
+	<string name="addContactButtontext">Add Contact</string>
 </resources>
