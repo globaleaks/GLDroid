@@ -18,7 +18,7 @@ public class FilterStreamEntity extends InputStreamEntity {
 
     @Override
     public void writeTo(final OutputStream outstream) throws IOException {
-        super.writeTo(new CountingOutputStream(outstream, this.listener));
+        super.writeTo(new CountingOutputStream(outstream, listener));
     }
 
     public static class CountingOutputStream extends FilterOutputStream {
@@ -29,19 +29,19 @@ public class FilterStreamEntity extends InputStreamEntity {
         public CountingOutputStream(final OutputStream out, final ProgressListener listener) {
             super(out);
             this.listener = listener;
-            this.transferred = 0;
+            transferred = 0;
         }
 
         public void write(byte[] b, int off, int len) throws IOException {
             out.write(b, off, len);
-            this.transferred += len;
-            this.listener.transferred(this.transferred);
+            transferred += len;
+            listener.transferred(transferred);
         }
 
         public void write(int b) throws IOException {
             out.write(b);
-            this.transferred++;
-            this.listener.transferred(this.transferred);
+            transferred++;
+            listener.transferred(transferred);
         }
     }
 

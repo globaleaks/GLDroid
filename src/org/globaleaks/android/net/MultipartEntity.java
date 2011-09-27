@@ -40,7 +40,7 @@ public class MultipartEntity implements HttpEntity {
         for (int i = 0; i < 30; i++) {
             buf.append(MULTIPART_CHARS[rand.nextInt(MULTIPART_CHARS.length)]);
         }
-        this.boundary = buf.toString();
+        boundary = buf.toString();
 
     }
 
