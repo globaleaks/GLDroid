@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
   xmlns:android="http://schemas.android.com/apk/res/android">
-    <EditTextPreference android:title="@string/gl_site" android:key="@string/base_url"></EditTextPreference>
+    <EditTextPreference android:title="@string/gl_site" android:key="@string/base_url" android:defaultValue="demo.globaleaks.org"></EditTextPreference>
+    <CheckBoxPreference android:title="@string/settings_tor_title" android:summary="@string/settings_tor_summary" android:key="@string/settings_tor_key" android:summaryOff="@string/settings_tor_summary_off" android:summaryOn="@string/settings_tor_summary_on"></CheckBoxPreference>
     
 </PreferenceScreen>

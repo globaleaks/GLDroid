@@ -7,20 +7,25 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.globaleaks.android.MainActivity;
+import org.globaleaks.android.R;
 import org.globaleaks.android.TulipActivity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
 
@@ -28,11 +33,17 @@ public class WebClient {
 
     private static final String LOG_TAG = "WebClient";
     
-    private HttpClient http;
+    private DefaultHttpClient http;
     private String baseUrl;
+    private final Activity ctx;
     
-    public WebClient(String baseUrl) {
+    public WebClient(String baseUrl, MainActivity ctx) {
+        this.ctx = ctx;
         http = new DefaultHttpClient();
+        if(ctx.torProxy()) {
+            HttpHost httpproxy = new HttpHost("127.0.0.1", 8118);
+            http.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, httpproxy);            
+        }
         this.baseUrl = baseUrl;
     }
     
@@ -52,7 +63,7 @@ public class WebClient {
     </form>
      * @throws Exception 
     */
-    public void submit(Intent data, final Activity ctx) throws Exception {
+    public void submit(Intent data) throws Exception {
         final Bundle bundle = data.getExtras();
         final String imgUri = bundle.getString("img");
         final ProgressDialog dialog = new ProgressDialog(ctx);

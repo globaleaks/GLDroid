@@ -6,10 +6,17 @@
     <string name="submitButtonLabel">Submit</string>
 	<string name="aboutMenu">About</string>
 	<string name="settingsMenu">Settings</string>
-	<string name="gl_site">Globaleaks Site</string>
-	<string name="base_url">base_url</string>
 	<string name="tulipLabel">Tulip:</string>
 	<string name="shareButtonText">Share</string>
 	<string name="addContactButtontext">Add Contact</string>
 	<string name="clearButtonLabel">Clear</string>
+	<string name="disable_tor_hint">You configured TOR in settings, but it seems that TOR is not running</string>
+	<string name="gl_site">Globaleaks Site</string>
+	<string name="base_url">base_url</string>
+
+	<string name="settings_tor_summary">Force connection through TOR</string>
+	<string name="settings_tor_title">Force TOR</string>
+	<string name="settings_tor_key">tor</string>
+	<string name="settings_tor_summary_on" >When ON, every connection is tunneled through TOR</string>
+	<string name="settings_tor_summary_off">When OFF, connection is potentially unsecure</string>
 </resources>
