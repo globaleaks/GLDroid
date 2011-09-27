@@ -31,6 +31,7 @@ implements OnClickListener
     private static final String TMP_IMAGE = "globaleaks.jpg";
     
     private Button submitButton;
+    private Button clearButton;
     private Button takePicture;
     private Button selectPicture;
     
@@ -50,6 +51,8 @@ implements OnClickListener
         
         submitButton = (Button) findViewById(R.id.submitButton);
         submitButton.setOnClickListener(this);
+        clearButton = (Button) findViewById(R.id.clearButton);
+        clearButton.setOnClickListener(this);
         takePicture = (Button) findViewById(R.id.takePictureButton);
         takePicture.setOnClickListener(this);
         selectPicture = (Button) findViewById(R.id.selectPictureButton);
@@ -78,6 +81,8 @@ implements OnClickListener
                 e.printStackTrace();
                 showDialog( "Error submitting data");
             }
+        } else if(view == clearButton) {
+            resetFields();
         } else if (view == selectPicture) {
             try {
                 Intent intent = new Intent(Intent.ACTION_PICK);
@@ -97,6 +102,14 @@ implements OnClickListener
             startActivityForResult(intent, CODE_TAKE_IMG);
 
         }
+    }
+
+    private void resetFields() {
+        if(bundle != null) bundle.clear();
+        EditText title = (EditText) findViewById(R.id.submitTitleText);
+        title.setText("");
+        EditText desc = (EditText) findViewById(R.id.submitDescriptionText);
+        desc.setText("");
     }
 
     @Override

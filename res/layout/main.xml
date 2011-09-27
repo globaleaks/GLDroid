@@ -33,7 +33,8 @@
 			android:text="Select Photo" android:layout_height="match_parent"
 			android:layout_width="125dp"></Button>
 	</LinearLayout>
-	<Button android:layout_gravity="center" android:id="@+id/submitButton"
-		android:layout_height="wrap_content" android:text="@string/submitButtonLabel"
-		android:layout_weight="0.12" android:layout_width="108dp"></Button>
+	<LinearLayout android:id="@+id/linearLayout1" android:layout_height="wrap_content" android:layout_width="match_parent" android:gravity="center_horizontal">
+		<Button android:id="@+id/submitButton" android:layout_height="wrap_content" android:text="@string/submitButtonLabel" android:layout_width="75dp" android:layout_marginRight="10dp"></Button>
+		<Button android:layout_height="wrap_content" android:id="@+id/clearButton" android:text="@string/clearButtonLabel" android:layout_width="75dp" android:layout_marginLeft="10dp"></Button>
+	</LinearLayout>
 </LinearLayout>
