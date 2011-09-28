@@ -14,18 +14,15 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.globaleaks.android.MainActivity;
-import org.globaleaks.android.R;
 import org.globaleaks.android.TulipActivity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
 
@@ -33,8 +30,8 @@ public class WebClient {
 
     private static final String LOG_TAG = "WebClient";
     
-    private DefaultHttpClient http;
-    private String baseUrl;
+    private final DefaultHttpClient http;
+    private final String baseUrl;
     private final Activity ctx;
     
     public WebClient(String baseUrl, MainActivity ctx) {
@@ -61,7 +58,8 @@ public class WebClient {
         <input name="_formkey" type="hidden" value="bfd84fe7-fdc9-4f49-988b-42f55f4d9950" />
         <input name="_formname" type="hidden" value="default" />
     </form>
-     * @throws Exception 
+     * @param data
+     * @throws Exception
     */
     public void submit(Intent data) throws Exception {
         final Bundle bundle = data.getExtras();
@@ -227,7 +225,8 @@ public class WebClient {
         String line = null;
         try {
             while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
+                sb.append(line);
+                sb.append('\n');
             }
         } catch (IOException e) {
             e.printStackTrace();
