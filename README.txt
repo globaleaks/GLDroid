@@ -19,7 +19,8 @@ Features
     * Files
     * Text
  * User is given the ability to see a progress bar of Upload
- * User can upload anonoymouly by enabling Tor
+ * User can upload anonoymouly by enabling Tor (via OrBot)
+ * Shooted photos can be privacy-improved via Obscuracam (via Guardina Project)
 
 Future Features
 ----------------------
