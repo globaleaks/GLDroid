@@ -1,14 +1,23 @@
 package org.globaleaks.model;
 
-import java.util.List;
+import android.graphics.Bitmap;
+
 
 public class Node {
 
 	private String name;
 	private String description;
 	private String email;
-	private List<Language> languages;
+	private Bitmap image;
 	
+	public Bitmap getImage() {
+		return image;
+	}
+
+	public void setImage(Bitmap image) {
+		this.image = image;
+	}
+
 	public Node() {	}
 	
 	public Node(String name, String description, String email) {
@@ -56,19 +65,46 @@ public class Node {
 			builder.append(email);
 			builder.append(", ");
 		}
-		if (languages != null) {
-			builder.append("languages=");
-			builder.append(languages);
-		}
 		builder.append("]");
 		return builder.toString();
 	}
 
-	public List<Language> getLanguages() {
-		return languages;
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
 	}
 
-	public void setLanguages(List<Language> languages) {
-		this.languages = languages;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Node other = (Node) obj;
+		if (description == null) {
+			if (other.description != null)
+				return false;
+		} else if (!description.equals(other.description))
+			return false;
+		if (email == null) {
+			if (other.email != null)
+				return false;
+		} else if (!email.equals(other.email))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
 	}
 }

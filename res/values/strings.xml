@@ -1,22 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">GlobaLeaks Submission</string>
-    <string name="submitTitleLabel">Title</string>
-    <string name="submitDescriptionLabel">Description</string>
-    <string name="submitButtonLabel">Submit</string>
-	<string name="aboutMenu">About</string>
-	<string name="settingsMenu">Settings</string>
-	<string name="tulipLabel">Tulip:</string>
-	<string name="shareButtonText">Share</string>
-	<string name="addContactButtontext">Add Contact</string>
-	<string name="clearButtonLabel">Clear</string>
-	<string name="disable_tor_hint">You configured TOR in settings, but it seems that TOR is not running</string>
-	<string name="gl_site">Globaleaks Site</string>
-	<string name="base_url">base_url</string>
 
-	<string name="settings_tor_summary">Force connection through TOR</string>
-	<string name="settings_tor_title">Force TOR</string>
-	<string name="settings_tor_key">tor</string>
-	<string name="settings_tor_summary_on" >When ON, every connection is tunneled through TOR</string>
-	<string name="settings_tor_summary_off">When OFF, connection is potentially unsecure</string>
+    <string name="app_name">GLDroid</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_create">Create</string>
+    <string name="action_view">View</string>
+    <string name="title_activity_new_submission">New Tip</string>
+    <string name="title_fragment_receivers">Receivers</string>
+    <string name="title_fragment_fields">Fields</string>
+    <string name="title_fragment_attachments">Attachments</string>
+    <string name="title_activity_create_submission">CreateSubmissionActivity</string>
+    <string name="title_activity_puppa">Puppa</string>
+    <string name="title_activity_main">Globaleaks</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="button_take_photo">Take Photo</string>
+    <string name="button_select_photo">Select Photo</string>
+    <string name="disable_tor_hint">You configured TOR in settings, but it seems that TOR is not running</string>
+    <string name="gl_site">Globaleaks Site</string>
+    <string name="base_url">base_url</string>
+
+    <string name="settings_tor_summary">Force connection through TOR</string>
+    <string name="settings_tor_title">Force TOR</string>
+    <string name="settings_tor_key">tor</string>
+    <string name="settings_tor_summary_on" >When ON, every connection is tunneled through TOR</string>
+    <string name="settings_tor_summary_off">When OFF, connection is potentially unsecure</string>
+    
 </resources>

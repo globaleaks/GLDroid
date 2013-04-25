@@ -1,27 +1,34 @@
 package org.globaleaks.util;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.globaleaks.model.Context;
 import org.globaleaks.model.Field;
 import org.globaleaks.model.Node;
+import org.globaleaks.model.Option;
 import org.globaleaks.model.Receiver;
+import org.globaleaks.model.Submission;
 
 import android.util.JsonReader;
 
 public class Parser {
 
-
-	List<Context> parseContexts(InputStream in) throws UnsupportedEncodingException, IOException {
-		JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+	public static DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy",Locale.UK);
+	
+	private GLClient client;
+	
+	public List<Context> parseContexts(Reader in) throws UnsupportedEncodingException, IOException {
+		JsonReader reader = new JsonReader(in);
 		try {
 			List<Context> ctxs = new ArrayList<Context>();
 		    reader.beginArray();
@@ -37,8 +44,8 @@ public class Parser {
 	}
 
 
-	Node parseNode(InputStream in) throws UnsupportedEncodingException, IOException {
-		JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+	public Node parseNode(Reader in) throws UnsupportedEncodingException, IOException {
+		JsonReader reader = new JsonReader(in);
 		try {
 			Node n = new Node();
 		    reader.beginObject();
@@ -48,7 +55,7 @@ public class Parser {
 		        n.setName(reader.nextString());
 		      } else if (name.equals("description")) {
 		        n.setDescription(reader.nextString());
-		      } else if (name.equals("description")) {
+		      } else if (name.equals("email")) {
 		        n.setEmail(reader.nextString());
 		        /* TBV add language
 		      } else if (name.equals("languages")) {
@@ -66,8 +73,8 @@ public class Parser {
 	}
 
 
-	List<Receiver> parseReceivers(InputStream in) throws UnsupportedEncodingException, IOException, ParseException {
-		JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+	public List<Receiver> parseReceivers(Reader in) throws UnsupportedEncodingException, IOException, ParseException {
+		JsonReader reader = new JsonReader(in);
 		try {
 			List<Receiver> recv = new ArrayList<Receiver>();
 		    reader.beginArray();
@@ -191,10 +198,90 @@ public class Parser {
 				f.setPresentationOrder(reader.nextInt());
 			} else if(name.equals("value")){
 				f.setValue(reader.nextString());
+			} else if(name.equals("options")) {
+				reader.beginArray();
+				ArrayList<Option> opts = new ArrayList<Option>();
+				while(reader.hasNext()){
+					Option opt = readOption(reader);
+					opts.add(opt);
+				}
+				f.setOptions(opts);
+				reader.endArray();
+			} else {
+				reader.skipValue();
 			}
 		}
 		reader.endObject();
 		return f;
+	}
+
+	private Option readOption(JsonReader reader) throws IOException {
+		Option o = new Option();
+		reader.beginObject();
+		while(reader.hasNext()){
+			String name = reader.nextName();
+			if(name.equals("order")) {
+				o.setOrder(reader.nextInt());
+			} else if(name.equals("value")) {
+				o.setValue(reader.nextString());
+			} else if(name.equals("name")) {
+				o.setName(reader.nextString());
+			} else {
+				reader.skipValue();
+			}
+		}
+		reader.endObject();
+		return o;
+	}
+
+
+	public Submission parseSubmission(Reader in) throws IOException, ParseException {
+		JsonReader reader = new JsonReader(in);
+		Submission s = new Submission();
+		/*
+		{"wb_fields": {}, "pertinence": "0", "receivers": [], "access_limit": 42, "receipt": "", "context_gus": "a89b7f94-8d88-4c49-b8cf-9bc5da985792", 
+			"creation_date": "Tue Mar  5 21:16:37 2013", "escalation_threshold": "0", "download_limit": 42, 
+			"submission_gus": "574ce9a9-1805-49e1-ae60-29c220120a63", "mark": "submission", 
+			"id": "574ce9a9-1805-49e1-ae60-29c220120a63", "files": []
+				
+		}
+		*/
+		reader.beginObject();
+		while(reader.hasNext()){
+			String name = reader.nextName();
+			if(name.equals("pertinence")){
+				s.setPertinance(reader.nextInt());
+			} else if (name.equals("access_limit")){
+				s.setAccessLimit(reader.nextInt());
+			} else if (name.equals("receipt")) {
+				s.setReceipt(reader.nextString());
+			} else if (name.equals("context_gus")) {
+				s.setCtx(client.contexts.get(reader.nextString()));
+			} else if(name.equals("creation_date")) {
+				s.setCreationDate(dateFormat.parse(reader.nextString()));
+			} else if(name.equals("escalation_threshold")){
+				s.setEscalationThreshold(reader.nextInt());
+			} else if(name.equals("download_limit")){
+				s.setDownloadLimit(reader.nextInt());
+			} else if(name.equals("submission_gus")){
+				s.setId(reader.nextString());
+			} else if(name.equals("id")){
+				s.setId(reader.nextString());
+			} else if(name.equals("mark")){
+				s.setMark(reader.nextString());
+				// TODO files
+			} else {
+				reader.skipValue();
+			}
+		}
+		reader.endObject();
+
+		return s;
+	}
+
+
+	public void setGLClient(GLClient glClient) {
+		this.client = glClient;
 	}
 
 }

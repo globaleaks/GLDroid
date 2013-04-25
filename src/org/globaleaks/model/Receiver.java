@@ -1,30 +1,61 @@
 package org.globaleaks.model;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Set;
 
-public class Receiver {
+import org.globaleaks.util.Parser;
 
-	private static DateFormat sdf = new SimpleDateFormat("EEE MMM  d HH:mm:ss yyyy",Locale.US);
+import android.graphics.Bitmap;
+
+public class Receiver extends Item {
+
+	public Receiver() {}
 	
+	public Receiver(Item i) {
+		super(i);
+		// TODO Auto-generated constructor stub
+	}
+	/*
 	private String id;
+    private String description; 
+    private String Name;  
+	*/
     private boolean canDeleteSubmission;
     private Set<String> contexts;
     private Date creationDate;
     private Date updateDate;
-    private String description; 
-    private String Name;  
     private int receiverLevel;
+    private Bitmap image;
+    
+    public Bitmap getImage() {
+		return image;
+	}
+
+	public void setImage(Bitmap image) {
+		this.image = image;
+	}
+
+	/*
 	public String getId() {
 		return id;
 	}
 	public void setId(String id) {
 		this.id = id;
 	}
+		public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public String getName() {
+		return Name;
+	}
+	public void setName(String name) {
+		Name = name;
+	}
+	*/
 	public boolean isCanDeleteSubmission() {
 		return canDeleteSubmission;
 	}
@@ -44,7 +75,7 @@ public class Receiver {
 		this.creationDate = creationDate;
 	}
 	public void setCreationDate(String creationDate) throws ParseException {
-		setCreationDate(sdf.parse(creationDate));
+		setCreationDate(Parser.dateFormat.parse(creationDate));
 	}
 	public Date getUpdateDate() {
 		return updateDate;
@@ -53,19 +84,7 @@ public class Receiver {
 		this.updateDate = updateDate;
 	}
 	public void setUpdateDate(String updateDate) throws ParseException {
-		setUpdateDate(sdf.parse(updateDate));
-	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	public String getName() {
-		return Name;
-	}
-	public void setName(String name) {
-		Name = name;
+		setUpdateDate(Parser.dateFormat.parse(updateDate));
 	}
 	public int getReceiverLevel() {
 		return receiverLevel;
@@ -105,15 +124,101 @@ public class Receiver {
 			builder.append(description);
 			builder.append(", ");
 		}
-		if (Name != null) {
+		if (name != null) {
 			builder.append("Name=");
-			builder.append(Name);
+			builder.append(name);
 			builder.append(", ");
 		}
 		builder.append("receiverLevel=");
 		builder.append(receiverLevel);
 		builder.append("]");
 		return builder.toString();
+	}
+
+	public String toShortString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Receiver [");
+		if (id != null) {
+			builder.append("id=");
+			builder.append(id);
+			builder.append(", ");
+		}
+		if (description != null) {
+			builder.append("description=");
+			builder.append(description);
+			builder.append(", ");
+		}
+		if (name != null) {
+			builder.append("Name=");
+			builder.append(name);
+			builder.append(", ");
+		}
+		builder.append("]");
+		return builder.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + (canDeleteSubmission ? 1231 : 1237);
+		result = prime * result
+				+ ((contexts == null) ? 0 : contexts.hashCode());
+		result = prime * result
+				+ ((creationDate == null) ? 0 : creationDate.hashCode());
+		result = prime * result
+				+ ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + receiverLevel;
+		result = prime * result
+				+ ((updateDate == null) ? 0 : updateDate.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Receiver other = (Receiver) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (canDeleteSubmission != other.canDeleteSubmission)
+			return false;
+		if (contexts == null) {
+			if (other.contexts != null)
+				return false;
+		} else if (!contexts.equals(other.contexts))
+			return false;
+		if (creationDate == null) {
+			if (other.creationDate != null)
+				return false;
+		} else if (!creationDate.equals(other.creationDate))
+			return false;
+		if (description == null) {
+			if (other.description != null)
+				return false;
+		} else if (!description.equals(other.description))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (receiverLevel != other.receiverLevel)
+			return false;
+		if (updateDate == null) {
+			if (other.updateDate != null)
+				return false;
+		} else if (!updateDate.equals(other.updateDate))
+			return false;
+		return true;
 	} 
 
 }

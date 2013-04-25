@@ -1,21 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="org.globaleaks.android"
-      android:versionCode="1"
-      android:versionName="1.0">
-    <uses-sdk android:minSdkVersion="8" />
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+    package="org.globaleaks.android"
+    android:versionCode="11"
+    android:versionName="1.0" >
 
-    <application android:icon="@drawable/logo" android:label="@string/app_name">
-        <activity android:name=".MainActivity"
-                  android:label="@string/app_name">
+    <uses-sdk
+        android:minSdkVersion="15"
+        android:targetSdkVersion="17" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/globaleaks"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme"
+        android:uiOptions="splitActionBarWhenNarrow" >
+        <activity
+            android:name="org.globaleaks.android.MainActivity"
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="org.globaleaks.android.Preferences"></activity>
-		<activity android:name="org.globaleaks.android.TulipActivity"></activity>
+        <activity
+            android:name="org.globaleaks.android.CreateSubmissionActivity"
+            android:label="@string/title_activity_create_submission"
+            android:parentActivityName="org.globaleaks.android.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.globaleaks.android.MainActivity" />
+        </activity>
+        <activity
+            android:name="org.globaleaks.android.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName="org.globaleaks.android.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.globaleaks.android.MainActivity" />
+        </activity>
     </application>
+
 </manifest>

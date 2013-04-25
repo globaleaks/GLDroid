@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="@string/aboutMenu" android:orderInCategory="0" android:id="@+id/menu_about"></item>
-    <item android:title="@string/settingsMenu" android:orderInCategory="1" android:id="@+id/menu_settings"></item>
-    
-</menu>
