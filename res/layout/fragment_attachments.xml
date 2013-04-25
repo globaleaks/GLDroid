@@ -1,0 +1,33 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+	<LinearLayout 
+	    android:orientation="horizontal"
+	    android:gravity="top|center_horizontal"
+	    android:layout_width="match_parent" 
+	    android:layout_height="wrap_content"
+	    android:layout_margin="10dp">
+	    
+	    <Button android:id="@+id/takePictureButton"
+	        android:drawableTop="@drawable/ic_camera" 
+	        android:text="@string/button_take_photo"
+	        android:layout_marginRight="15dp" 
+	        android:layout_height="wrap_content"
+	        android:layout_width="125dp"></Button>
+	    <Button android:id="@+id/selectPictureButton"
+	        android:drawableTop="@drawable/ic_gallery" 
+	        android:layout_marginLeft="15dp"
+	        android:text="@string/button_select_photo" 
+	        android:layout_height="wrap_content"
+	        android:layout_width="125dp"></Button>
+	</LinearLayout>
+
+	<ListView
+	    android:id="@+id/attachment_list"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content" >
+	</ListView>
+
+</LinearLayout>

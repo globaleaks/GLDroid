@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="3dip" >
+
+    <ImageView
+        android:id="@+id/receiver_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/globaleaks" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="1sp"
+        android:layout_marginLeft="2sp"
+         >
+ 
+	    <CheckedTextView
+	        android:id="@+id/receiver_item_name"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+	        android:textStyle="bold" 	        
+	        android:text="Receiver Name"/>
+
+        <TextView 
+            android:id="@+id/receiver_item_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Receiver Description"/>
+        
+ 
+    </LinearLayout>
+
+</LinearLayout>

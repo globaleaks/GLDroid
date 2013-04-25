@@ -1,0 +1,24 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/action_create"
+        android:icon="@drawable/content_new"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/action_create"/>
+    
+    <item
+        android:id="@+id/action_view"
+        android:icon="@drawable/action_search"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/action_view"/>
+        
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/action_settings"
+        android:orderInCategory="100"
+        android:showAsAction="never|withText"
+        android:title="@string/action_settings"/>
+
+</menu>
