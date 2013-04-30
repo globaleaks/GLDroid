@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.util.Log;
+
 
 public class Field {
 
@@ -18,6 +20,7 @@ public class Field {
     	fieldNames.put("textarea", FieldType.PARAGRAPHS);
     	fieldNames.put("radio",    FieldType.RADIO);
     	fieldNames.put("select",   FieldType.SELECT);
+    	fieldNames.put("phone",    FieldType.PHONE);
     	/*
     	fieldNames.put(FieldType.MULTI_SELECT, "text");
     	fieldNames.put(FieldType.TOGGLE,       "text");
@@ -25,7 +28,7 @@ public class Field {
     	
     	fieldNames.put(FieldType.NUMBER,       "text");
     	fieldNames.put(FieldType.URL,          "text");
-    	fieldNames.put(FieldType.PHONE,        "text");
+    	
     	fieldNames.put(FieldType.EMAIL,        "text");
     	fieldNames.put(FieldType.HEADING,      "text");
     	*/
@@ -129,8 +132,13 @@ public class Field {
 	}
 	
 	public static FieldType getFieldType(String stringType) {
-		return fieldNames.get(stringType);
+		FieldType res = fieldNames.get(stringType);
+		if(res == null) {
+			Log.e("GL", "Unrecognized field type: " + stringType);
+		}
+		return res;
 	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

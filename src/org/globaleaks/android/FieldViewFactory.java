@@ -41,6 +41,13 @@ public class FieldViewFactory {
 				}
 			}
 			return radio;
+		} else if(field.getType().equals(FieldType.PHONE)) {
+			EditText e = new EditText(context);
+			e.setRawInputType(InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
+			e.setInputType(InputType.TYPE_CLASS_PHONE);
+			e.setMaxLines(1);
+			e.setHint(field.getHint());
+			return e;			
 		} else {
 			TextView t = new TextView(context);
 			t.setText("NOT IMPLEMENTED FIELD TYPE");
