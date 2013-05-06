@@ -1,9 +1,11 @@
 package org.globaleaks.util;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -70,11 +72,8 @@ public class GLClient {
 	
 	private void fetchReceiverImage(Receiver r) {
 		if(r == null) return;
-		URL url;
 		try {
-			url = new URL(baseUrl + "/static/" + r.getId() + "_120.png");
-			Log.i("GL", url.toString());
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			HttpURLConnection con = createConnection(baseUrl + "/static/" + r.getId() + "_120.png");
 			con.setRequestMethod("GET");
 			Bitmap b = BitmapFactory.decodeStream(con.getInputStream());
 			r.setImage(b);
@@ -84,13 +83,18 @@ public class GLClient {
 		}
 	}
 
+	private HttpURLConnection createConnection(String url) throws MalformedURLException, IOException {
+		URL u = new URL(url);
+		Log.i("GL", u.toString());
+		HttpURLConnection con = (HttpURLConnection) u.openConnection();
+		con.setUseCaches(true);
+		return con;
+	}
+
 	public Submission createSubmission(Context ctx){
 		Submission s = new Submission(ctx);
-		URL url;
 		try {
-			url = new URL(baseUrl + "/submission");
-			Log.i("GL", url.toString());
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			HttpURLConnection con = createConnection(baseUrl + "/submission");
 			con.setRequestMethod("POST");
 			con.getOutputStream().write(s.toJSON().getBytes());
 			Log.i("GL","Submission: " + s.toJSON());
@@ -105,12 +109,9 @@ public class GLClient {
 	}
 	
 	public Submission updateSubmission(Submission s){
-		URL url;
 		s.setFinalize(true);
 		try {
-			url = new URL(baseUrl + "/submission/" + s.getId());
-			Log.i("GL", url.toString());
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			HttpURLConnection con = createConnection(baseUrl + "/submission/" + s.getId());
 			con.setRequestMethod("PUT");
 			con.getOutputStream().write(s.toJSON().getBytes());
 			Log.i("GL","Submission: " + s.toJSON());
@@ -134,11 +135,8 @@ public class GLClient {
 	}
 	
 	private List<Receiver> getReceivers() {
-		URL url;
 		try {
-			url = new URL(baseUrl + "/receivers");
-			Log.i("GL", url.toString());
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			HttpURLConnection con = createConnection(baseUrl + "/receivers");
 			InputStream in = new BufferedInputStream(con.getInputStream());
 			Log.i("GL","Start pargsing JSON");
 			return parser.parseReceivers(new InputStreamReader(in, "UTF-8"));
@@ -150,11 +148,8 @@ public class GLClient {
 
 	private Node getNode() {
 		Node node = null;
-		URL url;
 		try {
-			url = new URL(baseUrl + "/node");
-			Log.i("GL", url.toString());
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			HttpURLConnection con = createConnection(baseUrl + "/node");
 			InputStream in = new BufferedInputStream(con.getInputStream());
 			Log.i("GL","Start pargsing JSON");
 			node = parser.parseNode(new InputStreamReader(in, "UTF-8"));
@@ -163,9 +158,7 @@ public class GLClient {
 			return null;
 		}
 		try {
-			url = new URL(baseUrl + "/static/globaleaks_logo.png");
-			Log.i("GL", url.toString());
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			HttpURLConnection con = createConnection(baseUrl + "/static/globaleaks_logo.png");
 			con.setRequestMethod("GET");
 			Bitmap b = BitmapFactory.decodeStream(con.getInputStream());
 			node.setImage(b);
@@ -177,11 +170,8 @@ public class GLClient {
 	}
 
 	private List<Context> getContexts() {
-		URL url;
 		try {
-			url = new URL(baseUrl + "/contexts");
-			Log.i("GL", url.toString());
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			HttpURLConnection con = createConnection(baseUrl + "/contexts");
 			InputStream in = new BufferedInputStream(con.getInputStream());
 			Log.i("GL","Start pargsing JSON");
 			return parser.parseContexts(new InputStreamReader(in, "UTF-8"));
