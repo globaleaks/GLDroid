@@ -9,9 +9,12 @@ import org.globaleaks.model.Option;
 import android.content.Context;
 import android.text.InputType;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 public class FieldViewFactory {
@@ -29,6 +32,34 @@ public class FieldViewFactory {
 			e.setMinLines(5);
 			e.setHint(field.getHint());
 			return e;
+		} else if(field.getType().equals(FieldType.PHONE)) {
+			EditText e = new EditText(context);
+			e.setRawInputType(InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
+			e.setInputType(InputType.TYPE_CLASS_PHONE);
+			e.setMaxLines(1);
+			e.setHint(field.getHint());
+			return e;		
+		} else if(field.getType().equals(FieldType.NUMBER)) {
+			EditText e = new EditText(context);
+			e.setRawInputType(InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
+			e.setInputType(InputType.TYPE_CLASS_NUMBER);
+			e.setMaxLines(1);
+			e.setHint(field.getHint());
+			return e;		
+		} else if(field.getType().equals(FieldType.EMAIL)) {
+			EditText e = new EditText(context);
+			e.setRawInputType(InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
+			e.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+			e.setMaxLines(1);
+			e.setHint(field.getHint());
+			return e;		
+		} else if(field.getType().equals(FieldType.URL)) {
+			EditText e = new EditText(context);
+			e.setRawInputType(InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
+			e.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
+			e.setMaxLines(1);
+			e.setHint(field.getHint());
+			return e;		
 		} else if(field.getType().equals(FieldType.RADIO)) {
 			RadioGroup radio = new RadioGroup(context);
 			if(field.getOptions() != null) {
@@ -41,16 +72,18 @@ public class FieldViewFactory {
 				}
 			}
 			return radio;
-		} else if(field.getType().equals(FieldType.PHONE)) {
-			EditText e = new EditText(context);
-			e.setRawInputType(InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
-			e.setInputType(InputType.TYPE_CLASS_PHONE);
-			e.setMaxLines(1);
-			e.setHint(field.getHint());
-			return e;			
+		} else if(field.getType().equals(FieldType.SELECT)) {
+			Spinner s = new Spinner(context);
+			ArrayAdapter<Option> a = new ArrayAdapter<Option>(context, android.R.layout.simple_list_item_1, field.getOptions());
+			s.setAdapter(a);
+			return s;
+		} else if(field.getType().equals(FieldType.CHECKBOXES)) {
+			CheckBox ch = new CheckBox(context);
+			ch.setHint(field.getHint());
+			return ch;
 		} else {
 			TextView t = new TextView(context);
-			t.setText("NOT IMPLEMENTED FIELD TYPE");
+			t.setText("NOT IMPLEMENTED FIELD TYPE: ");
 			return t;
 		}
 	}

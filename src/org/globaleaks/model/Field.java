@@ -10,26 +10,24 @@ import android.util.Log;
 public class Field {
 
     public enum FieldType {
-    	TEXT, RADIO, SELECT, MULTI_SELECT, TOGGLE, CHECKBOXES, PARAGRAPHS, NUMBER, URL, PHONE, EMAIL, HEADING
+    	UNSUPPORTED, TEXT, RADIO, SELECT, MULTI_SELECT, TOGGLE, CHECKBOXES, PARAGRAPHS, NUMBER, URL, PHONE, EMAIL, HEADING
     };
     
     private static final Map<String, FieldType> fieldNames = new HashMap<String, Field.FieldType>();
     
     static {
-    	fieldNames.put("text",     FieldType.TEXT);
-    	fieldNames.put("textarea", FieldType.PARAGRAPHS);
-    	fieldNames.put("radio",    FieldType.RADIO);
-    	fieldNames.put("select",   FieldType.SELECT);
-    	fieldNames.put("phone",    FieldType.PHONE);
+    	fieldNames.put("text",       FieldType.TEXT);
+    	fieldNames.put("textarea",   FieldType.PARAGRAPHS);
+    	fieldNames.put("radio",      FieldType.RADIO);
+    	fieldNames.put("select",     FieldType.SELECT);
+    	fieldNames.put("phone",      FieldType.PHONE);
+    	fieldNames.put("number",     FieldType.NUMBER); //TO BE TESTED
+    	fieldNames.put("url",        FieldType.URL);    //TO BE TESTED
+    	fieldNames.put("email",    	 FieldType.EMAIL);  //TO BE TESTED
+    	fieldNames.put("checkboxes", FieldType.CHECKBOXES);
     	/*
     	fieldNames.put(FieldType.MULTI_SELECT, "text");
     	fieldNames.put(FieldType.TOGGLE,       "text");
-    	fieldNames.put(FieldType.CHECKBOXES,   "text");
-    	
-    	fieldNames.put(FieldType.NUMBER,       "text");
-    	fieldNames.put(FieldType.URL,          "text");
-    	
-    	fieldNames.put(FieldType.EMAIL,        "text");
     	fieldNames.put(FieldType.HEADING,      "text");
     	*/
     }
@@ -42,6 +40,10 @@ public class Field {
     private FieldType type; 
     private String value;
     private List<Option> options;
+    
+    public Field() {
+    	this.type = FieldType.UNSUPPORTED;
+    }
     
 	public List<Option> getOptions() {
 		return options;
