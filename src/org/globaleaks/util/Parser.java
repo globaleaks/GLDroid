@@ -22,8 +22,9 @@ import org.globaleaks.model.Submission;
 import android.util.JsonReader;
 
 public class Parser {
-
-	public static DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy",Locale.UK);
+    // 2013-06-09T19:39:30.369690
+    public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS",Locale.UK);
+	//public static DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy",Locale.UK);
 	
 	private GLClient client;
 	
@@ -150,6 +151,12 @@ public class Parser {
 				ctx.setReceivers(readReceiversIDs(reader));
 			} else if(name.equals("selectable_receiver")) {
 				ctx.setSelectableReceiver(reader.nextBoolean());
+			} else if(name.equals("receipt_description")){
+			    ctx.setReceiptDescription(reader.nextString());
+			} else if(name.equals("submission_introduction")) {
+			    ctx.setSubmissionIntroduction(reader.nextString());
+			} else if(name.equals("submission_disclaimer")){
+			    ctx.setSubmissinoDisclaimer(reader.nextString());
 			} else {
 				reader.skipValue();
 			}
@@ -239,17 +246,18 @@ public class Parser {
 		JsonReader reader = new JsonReader(in);
 		Submission s = new Submission();
 		/*
-		{"wb_fields": {}, "pertinence": "0", "receivers": [], "access_limit": 42, "receipt": "", "context_gus": "a89b7f94-8d88-4c49-b8cf-9bc5da985792", 
-			"creation_date": "Tue Mar  5 21:16:37 2013", "escalation_threshold": "0", "download_limit": 42, 
-			"submission_gus": "574ce9a9-1805-49e1-ae60-29c220120a63", "mark": "submission", 
-			"id": "574ce9a9-1805-49e1-ae60-29c220120a63", "files": []
-				
-		}
+		{"wb_fields": {"Full description": "ijhubb", "Short title": "jjhjjv"}, "pertinence": "0", 
+		"receivers": ["24845644-3c6a-488d-b748-5aa15933a0e5", "1e61def9-f031-451b-be68-f177d9f477f6", "fb61111d-1259-47d2-ad0a-69b2d23f801c"], 
+		"expiration_date": "2013-06-24T23:39:58.218079", "access_limit": 42, "receipt": "8030426621", "context_gus": "281ba696-c414-4782-8b51-43c709fb1efc", 
+		"creation_date": "2013-06-10T00:39:58.218114", "escalation_threshold": "0", "download_limit": 42, "submission_gus": "7f4e24fd-51f2-4fe7-bedc-4f8e77e424f1", 
+		"mark": "finalize", "id": "7f4e24fd-51f2-4fe7-bedc-4f8e77e424f1", "files": ["cc0e6ca9-ae69-4957-9983-9c96ca20518a"]}		
 		*/
 		reader.beginObject();
 		while(reader.hasNext()){
 			String name = reader.nextName();
-			if(name.equals("pertinence")){
+			if(name.equals("error_message")) {
+				throw new ParseException(reader.nextString(), 0);
+			} else if(name.equals("pertinence")){
 				s.setPertinance(reader.nextInt());
 			} else if (name.equals("access_limit")){
 				s.setAccessLimit(reader.nextInt());
@@ -269,7 +277,13 @@ public class Parser {
 				s.setId(reader.nextString());
 			} else if(name.equals("mark")){
 				s.setMark(reader.nextString());
-				// TODO files
+			} else if(name.equals("receivers")) {
+				reader.beginArray();
+				while(reader.hasNext()) {
+					String id = reader.nextString();
+					s.addReceiver(client.receivers.get(id));
+				}
+				reader.endArray();
 			} else {
 				reader.skipValue();
 			}

@@ -27,9 +27,10 @@ import android.widget.TextView;
 
 public class ReceiversFragment extends Fragment implements SubmissionFragment {
 
-	
+    private boolean receiversEdited = false;
+    
 	public interface OnContextSelectedListener {
-		void onContextSelected(Context ctx);
+		void onContextSelected();
 	}
 	
 	@Override
@@ -65,15 +66,27 @@ public class ReceiversFragment extends Fragment implements SubmissionFragment {
 				recv.setItemsCanFocus(false);
 				Log.i("GL", "checked count="+recv.getCheckedItemCount());
 				SparseBooleanArray ch = recv.getCheckedItemPositions();
+				if(!receiversEdited) {
+				    // pre-select all receivers
+				    GLApplication app = (GLApplication) getActivity().getApplicationContext();
+				    app.addReceiver(list);
+				}
 				recv.setOnItemClickListener(new OnItemClickListener() {
 
 					@Override
 					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					    receiversEdited = true;
 						Log.i("GL", "position=" + position +", ID="+id);
 						Receiver o = (Receiver) recv.getItemAtPosition(position);
 						Log.i("GL", "item="+o.toString());
 						CheckedTextView ct = (CheckedTextView) view.findViewById(R.id.receiver_item_name);
 						ct.setChecked(!ct.isChecked());
+						GLApplication app = (GLApplication) getActivity().getApplicationContext();
+						if(ct.isChecked()) {
+						    app.addReceiver(o);
+						} else {
+						    app.removeReceiver(o);
+						}
 					}
 				});
 
@@ -86,8 +99,10 @@ public class ReceiversFragment extends Fragment implements SubmissionFragment {
 						View root = inflater.inflate(R.layout.receiver_item, parent,false);
 						Receiver i = getItem(position);
 						
-						TextView name = (TextView) root.findViewById(R.id.receiver_item_name);
+						CheckedTextView name = (CheckedTextView) root.findViewById(R.id.receiver_item_name);
 						name.setText(i.getName());
+						GLApplication app = (GLApplication) getActivity().getApplicationContext();
+						name.setChecked(app.getReceivers().contains(i));
 						TextView description = (TextView) root.findViewById(R.id.receiver_item_description);
 						description.setText(i.getDescription());
 						ImageView image = (ImageView) root.findViewById(R.id.receiver_image);
@@ -100,8 +115,10 @@ public class ReceiversFragment extends Fragment implements SubmissionFragment {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Context ctx = (Context) parent.getItemAtPosition(position);
+				GLApplication app = (GLApplication) getActivity().getApplicationContext();
+				app.setContext(ctx);
 				updateReceiversList(getReceivers(ctx.getId()));
-				((OnContextSelectedListener)getActivity()).onContextSelected(ctx);
+				((OnContextSelectedListener)getActivity()).onContextSelected();
 			}
 
 			@Override

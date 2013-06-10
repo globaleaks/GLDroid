@@ -15,6 +15,13 @@
         android:title="@string/action_view"/>
         
     <item
+        android:id="@+id/action_refresh"
+        android:icon="@drawable/navigation_refresh"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/action_refresh"/>
+    
+    <item
         android:id="@+id/action_settings"
         android:icon="@drawable/action_settings"
         android:orderInCategory="100"

@@ -12,15 +12,13 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="Attachment Title"
-    android:textSize="20sp"
     android:gravity="center_vertical|left"/>
 
-<Button
+<ImageButton
     android:id="@+id/attachment_delete"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content" 
-    android:text="Delete"
     android:gravity="center_vertical|right"
-    />
+    android:src="@android:drawable/ic_delete" />
 
 </LinearLayout>

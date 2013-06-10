@@ -9,6 +9,11 @@ public class FieldValue {
 		this.name = name;
 		this.value = value;
 	}
+	public FieldValue(Field field) {
+	    this.name = field.getName();
+	    this.value = field.getValue();
+    }
+
 	public String getName() {
 		return name;
 	}
@@ -49,6 +54,11 @@ public class FieldValue {
 		} else if (!value.equals(other.value))
 			return false;
 		return true;
+	}
+	@Override
+	public String toString() {
+		return "FieldValue [" + (name != null ? "name=" + name + ", " : "") + (value != null ? "value=" + value : "")
+				+ "]";
 	}
 	
 

@@ -32,7 +32,7 @@
 		        android:padding="3dip"
 		        android:textStyle="bold"
 		        android:textSize="30dip" 
-		        android:text="Loading node data..."/>
+		        android:text="@string/title_node_loading"/>
 			
 			<TextView 
 			    android:id="@+id/node_description"

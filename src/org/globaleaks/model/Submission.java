@@ -1,5 +1,6 @@
 package org.globaleaks.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -78,6 +79,15 @@ public class Submission {
 		this.finalize = finalize;
 	}
 
+	public void addReceiver(Receiver r) {
+		if(receivers == null) {
+			receivers = new ArrayList<Receiver>();
+		}
+		if(!receivers.contains(r)) {
+			receivers.add(r);
+		}
+	}
+	
 	public List<Receiver> getReceivers() {
 		return receivers;
 	}

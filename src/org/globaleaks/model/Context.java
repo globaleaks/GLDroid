@@ -10,36 +10,39 @@ public class Context extends Item {
 	public Context(Item i) {
 		super(i);
 	}
-	/*
-	private String id;
-	private String description;
-	private String name;
-	*/
+
 	private List<Field> fields;
 	private Set<String> receivers;
 	private boolean selectableReceiver;
+	private String receiptDescription;
+	private String submissinoDisclaimer;
+	private String submissionIntroduction;
 	
-	/*
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	*/
-	public List<Field> getFields() {
+	public String getReceiptDescription() {
+        return receiptDescription;
+    }
+
+    public void setReceiptDescription(String receiptDescription) {
+        this.receiptDescription = receiptDescription;
+    }
+
+    public String getSubmissinoDisclaimer() {
+        return submissinoDisclaimer;
+    }
+
+    public void setSubmissinoDisclaimer(String submissinoDisclaimer) {
+        this.submissinoDisclaimer = submissinoDisclaimer;
+    }
+
+    public String getSubmissionIntroduction() {
+        return submissionIntroduction;
+    }
+
+    public void setSubmissionIntroduction(String submissionIntroduction) {
+        this.submissionIntroduction = submissionIntroduction;
+    }
+
+    public List<Field> getFields() {
 		return fields;
 	}
 	public void setFields(List<Field> fields) {
@@ -79,6 +82,21 @@ public class Context extends Item {
 			builder.append("receivers=");
 			builder.append(receivers);
 			builder.append(", ");
+		}
+		if (receiptDescription != null) {
+		    builder.append("receiptDescription=");
+		    builder.append(receiptDescription);
+		    builder.append(", ");
+		}
+		if (submissinoDisclaimer != null) {
+		    builder.append("submissionDisclaimer=");
+		    builder.append(submissinoDisclaimer);
+		    builder.append(", ");
+		}
+		if (submissionIntroduction != null) {
+		    builder.append("submissionInstroduction=");
+		    builder.append(submissionIntroduction);
+		    builder.append(", ");
 		}
 		builder.append("selectableReceiver=");
 		builder.append(selectableReceiver);

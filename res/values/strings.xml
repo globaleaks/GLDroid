@@ -6,6 +6,9 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_create">Create</string>
     <string name="action_view">View</string>
+    <string name="action_submit">Submit</string>
+    <string name="action_refresh">Refresh</string>
+    
     <string name="title_activity_new_submission">New Tip</string>
     <string name="title_fragment_receivers">Receivers</string>
     <string name="title_fragment_fields">Fields</string>
@@ -14,16 +17,19 @@
     <string name="title_activity_puppa">Puppa</string>
     <string name="title_activity_main">Globaleaks</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="title_node_loading">Loading node data...</string>
+    
     <string name="button_take_photo">Take Photo</string>
     <string name="button_select_photo">Select Photo</string>
     <string name="disable_tor_hint">You configured TOR in settings, but it seems that TOR is not running</string>
-    <string name="gl_site">Globaleaks Site</string>
-    <string name="base_url">base_url</string>
-
+    
+    <string name="settings_glsite_title">Globaleaks Site</string>
     <string name="settings_tor_summary">Force connection through TOR</string>
     <string name="settings_tor_title">Force TOR</string>
     <string name="settings_tor_key">tor</string>
     <string name="settings_tor_summary_on" >When ON, every connection is tunneled through TOR</string>
     <string name="settings_tor_summary_off">When OFF, connection is potentially unsecure</string>
+    <string name="settings_cache_title">Cache data</string>
+    
     
 </resources>

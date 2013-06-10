@@ -2,6 +2,8 @@ package org.globaleaks.android;
 
 import java.util.ArrayList;
 
+import org.globaleaks.model.File;
+
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -17,7 +19,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class AttachmentsFragment extends Fragment implements SubmissionFragment {
@@ -30,10 +34,35 @@ public class AttachmentsFragment extends Fragment implements SubmissionFragment 
     private ListView attachments;
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_attachments, container, false);
 		attachments = (ListView) rootView.findViewById(R.id.attachment_list);
-		attachments.setAdapter(new ArrayAdapter<String>(getActivity(), R.id.attachment_item, new ArrayList<String>()));
+		attachments.setAdapter(new ArrayAdapter<Uri>(getActivity(), R.id.attachment_item, new ArrayList<Uri>()){
+
+            @Override
+            public View getView(final int position, View convertView, ViewGroup parent) {
+                if(convertView == null)
+                    convertView = inflater.inflate(R.layout.attachment_item, parent,false);
+                Uri a = getItem(position);
+                TextView name = (TextView) convertView.findViewById(R.id.attachment_label);
+                name.setText(a.toString());
+                ImageButton delete = (ImageButton) convertView.findViewById(R.id.attachment_delete);
+                delete.setOnClickListener(new OnClickListener() {
+                    
+                    @Override
+                    public void onClick(View v) {
+                        removePicture(getItem(position));
+                    }
+                });
+                return convertView;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                return getView(position, convertView, parent);
+            }
+		    
+		});
 
 		final Button takePhoto = (Button) rootView.findViewById(R.id.takePictureButton);
 		takePhoto.setOnClickListener(new OnClickListener() {
@@ -76,7 +105,7 @@ public class AttachmentsFragment extends Fragment implements SubmissionFragment 
                     uriImageResult = data.getData();
                     if (uriImageResult != null){
                         Log.i("GL", "Selected image at " + uriImageResult);
-                        addPicture(uriImageResult.toString());
+                        addPicture(uriImageResult);
                     } else {
                         Toast.makeText(getActivity(), "Unable to load photo.", Toast.LENGTH_LONG).show();
                     }
@@ -84,14 +113,27 @@ public class AttachmentsFragment extends Fragment implements SubmissionFragment 
                     Toast.makeText(getActivity(), "Unable to load photo.", Toast.LENGTH_LONG).show();
                 }
             } else if (requestCode == CODE_TAKE_IMG) {
-                addPicture(uriImageResult.toString());
+                addPicture(uriImageResult);
             }
         } 
     }
 
-	private void addPicture(String string) {
-		ArrayAdapter<String> list = (ArrayAdapter<String>) attachments.getAdapter();
-		list.add(string);
+	private void addPicture(Uri uri) {
+        ArrayAdapter<Uri> list = (ArrayAdapter<Uri>) attachments.getAdapter();
+        list.remove(uri);
+		list.add(uri);
+		GLApplication app = (GLApplication) getActivity().getApplication();
+		File file = new File(uri);
+		app.addFile(file);
+	}
+	
+	private void removePicture(Uri uri){
+	    @SuppressWarnings("unchecked")
+        ArrayAdapter<Uri> list = (ArrayAdapter<Uri>) attachments.getAdapter();
+	    list.remove(uri);
+        GLApplication app = (GLApplication) getActivity().getApplication();
+        app.removeFile(new File(uri));
+
 	}
 
 	@Override

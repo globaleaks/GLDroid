@@ -1,9 +1,9 @@
 package org.globaleaks.android;
 
 import org.globaleaks.android.ReceiversFragment.OnContextSelectedListener;
-import org.globaleaks.model.Context;
 
 import android.app.ActionBar;
+import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -22,10 +22,12 @@ implements ActionBar.TabListener, OnContextSelectedListener
 
 	SectionsPagerAdapter pagerAdapter;
 	ViewPager pager;
-
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		GLApplication app = (GLApplication) getApplication();
+		app.resetSubmission();
 		setContentView(R.layout.activity_create_submission);
 		setTitle(R.string.title_activity_new_submission);
 		findViewById(android.R.id.home).setPadding(10, 1, 10, 1);
@@ -45,19 +47,17 @@ implements ActionBar.TabListener, OnContextSelectedListener
 			}
 		});
 		for (int i = 0; i < pagerAdapter.getCount(); i++) {
-			// Create a tab with text corresponding to the page title defined by
-			// the adapter. Also specify this Activity object, which implements
-			// the TabListener interface, as the callback (listener) for when
-			// this tab is selected.
-			actionBar.addTab(actionBar.newTab().setText(pagerAdapter.getPageTitle(getResources(),i)).setTabListener(this));
+		    Tab tab = actionBar.newTab();
+		    tab.setText(pagerAdapter.getPageTitle(getResources(),i))
+		       .setTabListener(this);
+			actionBar.addTab(tab);
 		}
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		//getMenuInflater().inflate(R.menu.create_submission, menu);
-		return true;
+	    getMenuInflater().inflate(R.menu.submission, menu);
+	    return true;
 	}
 
 	@Override
@@ -66,14 +66,16 @@ implements ActionBar.TabListener, OnContextSelectedListener
 			case android.R.id.home:
 				NavUtils.navigateUpFromSameTask(this);
 				return true;
-			}
+			case R.id.action_submit:
+			    GLApplication app = (GLApplication) getApplication();
+			    new CreateSubmissionTask(this).execute(app);
+			    return true;
+		}
 		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
 	public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-		// When the given tab is selected, switch to the corresponding page in
-		// the ViewPager.
 		pager.setCurrentItem(tab.getPosition());
 	}
 
@@ -121,9 +123,9 @@ implements ActionBar.TabListener, OnContextSelectedListener
 	}
 
 	@Override
-	public void onContextSelected(Context ctx) {
+	public void onContextSelected() {
 		FieldsFragment ff = (FieldsFragment) pagerAdapter.fragments[1];
-		ff.refreshFields(ctx);
+		ff.refreshFields();
 	}
 
 }
