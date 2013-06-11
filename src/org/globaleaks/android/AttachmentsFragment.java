@@ -37,15 +37,16 @@ public class AttachmentsFragment extends Fragment implements SubmissionFragment 
 	public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_attachments, container, false);
 		attachments = (ListView) rootView.findViewById(R.id.attachment_list);
-		attachments.setAdapter(new ArrayAdapter<Uri>(getActivity(), R.id.attachment_item, new ArrayList<Uri>()){
+		GLApplication app = (GLApplication) getActivity().getApplication();
+		attachments.setAdapter(new ArrayAdapter<File>(getActivity(), R.id.attachment_item, new ArrayList<File>(app.getFiles())){
 
             @Override
             public View getView(final int position, View convertView, ViewGroup parent) {
                 if(convertView == null)
                     convertView = inflater.inflate(R.layout.attachment_item, parent,false);
-                Uri a = getItem(position);
+                File a = getItem(position);
                 TextView name = (TextView) convertView.findViewById(R.id.attachment_label);
-                name.setText(a.toString());
+                name.setText(a.getName());
                 ImageButton delete = (ImageButton) convertView.findViewById(R.id.attachment_delete);
                 delete.setOnClickListener(new OnClickListener() {
                     
@@ -105,7 +106,7 @@ public class AttachmentsFragment extends Fragment implements SubmissionFragment 
                     uriImageResult = data.getData();
                     if (uriImageResult != null){
                         Log.i("GL", "Selected image at " + uriImageResult);
-                        addPicture(uriImageResult);
+                        addPicture(new File(uriImageResult));
                     } else {
                         Toast.makeText(getActivity(), "Unable to load photo.", Toast.LENGTH_LONG).show();
                     }
@@ -113,26 +114,25 @@ public class AttachmentsFragment extends Fragment implements SubmissionFragment 
                     Toast.makeText(getActivity(), "Unable to load photo.", Toast.LENGTH_LONG).show();
                 }
             } else if (requestCode == CODE_TAKE_IMG) {
-                addPicture(uriImageResult);
+                addPicture(new File(uriImageResult));
             }
         } 
     }
 
-	private void addPicture(Uri uri) {
-        ArrayAdapter<Uri> list = (ArrayAdapter<Uri>) attachments.getAdapter();
-        list.remove(uri);
-		list.add(uri);
+	private void addPicture(File file) {
+		ArrayAdapter<File> list = (ArrayAdapter<File>) attachments.getAdapter();
+        list.remove(file);
+		list.add(file);
 		GLApplication app = (GLApplication) getActivity().getApplication();
-		File file = new File(uri);
 		app.addFile(file);
 	}
 	
-	private void removePicture(Uri uri){
+	private void removePicture(File file){
 	    @SuppressWarnings("unchecked")
-        ArrayAdapter<Uri> list = (ArrayAdapter<Uri>) attachments.getAdapter();
-	    list.remove(uri);
+        ArrayAdapter<File> list = (ArrayAdapter<File>) attachments.getAdapter();
+	    list.remove(file);
         GLApplication app = (GLApplication) getActivity().getApplication();
-        app.removeFile(new File(uri));
+        app.removeFile(file);
 
 	}
 

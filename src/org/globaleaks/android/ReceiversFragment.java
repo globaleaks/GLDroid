@@ -36,6 +36,10 @@ public class ReceiversFragment extends Fragment implements SubmissionFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if(savedInstanceState != null) {
+			// restoring fragment
+			receiversEdited = true;
+		}
 	}
 	
 	public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

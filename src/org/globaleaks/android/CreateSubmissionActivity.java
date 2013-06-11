@@ -27,7 +27,11 @@ implements ActionBar.TabListener, OnContextSelectedListener
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		GLApplication app = (GLApplication) getApplication();
-		app.resetSubmission();
+		if(savedInstanceState == null) {
+			// new activity => reset globale state
+			app.resetSubmission();
+		}
+		
 		setContentView(R.layout.activity_create_submission);
 		setTitle(R.string.title_activity_new_submission);
 		findViewById(android.R.id.home).setPadding(10, 1, 10, 1);
