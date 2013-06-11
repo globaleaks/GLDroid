@@ -7,6 +7,8 @@ import org.globaleaks.model.File;
 import org.globaleaks.model.Submission;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -42,12 +44,20 @@ public class CreateSubmissionTask extends AsyncTask<GLApplication,Integer,Submis
     }
 
 	@Override
-	protected void onPostExecute(Submission result) {
+	protected void onPostExecute(final Submission result) {
 		app.setSubmission(result);
-		Intent intent = new Intent(app.getApplicationContext(), MainActivity.class);
-		intent.putExtra("receipt", result.getReceipt());
-		parent.startActivity(intent);
-		parent = null;
+		AlertDialog ad = new AlertDialog.Builder(parent)
+						.setTitle("Submission Receipt")
+						.setMessage(result.getReceipt())
+						.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+           public void onClick(DialogInterface dialog, int id) {
+	       		Intent intent = new Intent(app.getApplicationContext(), MainActivity.class);
+	    		intent.putExtra("receipt", result.getReceipt());
+	    		parent.startActivity(intent);
+	    		parent = null;
+           }
+       }).create();
+		ad.show();
 	}
     
     
