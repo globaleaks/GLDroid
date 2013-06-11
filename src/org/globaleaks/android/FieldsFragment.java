@@ -6,12 +6,12 @@ import java.util.List;
 import org.globaleaks.model.Context;
 import org.globaleaks.model.Field;
 import org.globaleaks.model.FieldValue;
+import org.globaleaks.util.Logger;
 
 import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
@@ -50,7 +50,7 @@ public class FieldsFragment extends Fragment implements SubmissionFragment {
             
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                Log.d("GL", "view " + v + " has focus = " + hasFocus);
+                Logger.d("view " + v + " has focus = " + hasFocus);
                 
             }
         });

@@ -12,8 +12,6 @@ import org.globaleaks.model.Submission;
 import org.globaleaks.util.Parser;
 import org.json.JSONException;
 
-import android.util.Log;
-
 public class ModelParsing extends TestCase {
 
 	private Parser parser = new Parser();

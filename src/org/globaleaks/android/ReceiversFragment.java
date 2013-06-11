@@ -6,11 +6,11 @@ import java.util.Comparator;
 
 import org.globaleaks.model.Context;
 import org.globaleaks.model.Receiver;
+import org.globaleaks.util.Logger;
 
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,7 +68,7 @@ public class ReceiversFragment extends Fragment implements SubmissionFragment {
 			private void updateReceiversList(ArrayList<Receiver> list){
 				final ListView recv = (ListView) rootView.findViewById(R.id.receivers_list);
 				recv.setItemsCanFocus(false);
-				Log.i("GL", "checked count="+recv.getCheckedItemCount());
+				Logger.i("checked count="+recv.getCheckedItemCount());
 				SparseBooleanArray ch = recv.getCheckedItemPositions();
 				if(!receiversEdited) {
 				    // pre-select all receivers
@@ -80,9 +80,9 @@ public class ReceiversFragment extends Fragment implements SubmissionFragment {
 					@Override
 					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 					    receiversEdited = true;
-						Log.i("GL", "position=" + position +", ID="+id);
+						Logger.i("position=" + position +", ID="+id);
 						Receiver o = (Receiver) recv.getItemAtPosition(position);
-						Log.i("GL", "item="+o.toString());
+						Logger.i("item="+o.toString());
 						CheckedTextView ct = (CheckedTextView) view.findViewById(R.id.receiver_item_name);
 						ct.setChecked(!ct.isChecked());
 						GLApplication app = (GLApplication) getActivity().getApplicationContext();
@@ -94,7 +94,7 @@ public class ReceiversFragment extends Fragment implements SubmissionFragment {
 					}
 				});
 
-				Log.i("GL", "checked idx="+ch);
+				Logger.i("checked idx="+ch);
 					
 				recv.setAdapter(new ArrayAdapter<Receiver>(getActivity(),R.layout.receiver_item, android.R.layout.simple_list_item_multiple_choice, list){
 

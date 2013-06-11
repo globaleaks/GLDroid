@@ -3,6 +3,7 @@ package org.globaleaks.android;
 import java.util.ArrayList;
 
 import org.globaleaks.model.File;
+import org.globaleaks.util.Logger;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -12,7 +13,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -91,7 +91,7 @@ public class AttachmentsFragment extends Fragment implements SubmissionFragment 
 	                startActivityForResult(intent, CODE_SELECT_IMG);
 	            } catch (Exception e) {
 	                Toast.makeText(getActivity(), "Unable to open Gallery", Toast.LENGTH_LONG).show();
-	                Log.e("GL", "Error loading gallery to select image: " + e.getMessage(), e);
+	                Logger.e("Error loading gallery to select image: " + e.getMessage(), e);
 	            }	
 			}
 		});
@@ -105,7 +105,7 @@ public class AttachmentsFragment extends Fragment implements SubmissionFragment 
                 if (data != null) {
                     uriImageResult = data.getData();
                     if (uriImageResult != null){
-                        Log.i("GL", "Selected image at " + uriImageResult);
+                        Logger.i("Selected image at " + uriImageResult);
                         addPicture(new File(uriImageResult));
                     } else {
                         Toast.makeText(getActivity(), "Unable to load photo.", Toast.LENGTH_LONG).show();

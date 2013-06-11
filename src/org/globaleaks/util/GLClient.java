@@ -25,7 +25,6 @@ import org.globaleaks.model.Tip;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.http.HttpResponseCache;
-import android.util.Log;
 
 public class GLClient {
 
@@ -65,26 +64,26 @@ public class GLClient {
             long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
             HttpResponseCache.install(httpCacheDir, httpCacheSize);
           } catch (IOException e) {
-            Log.i("GL", "HTTP response cache failed:" + e);
+            Logger.i("HTTP response cache failed:" + e);
           }
     }
 
 	public void fetchMetadata(){
 		node = fetchNode();
 		if(node == null) return;
-		Log.i("GL", node.toString());
+		Logger.i(node.toString());
 		List<Context> ctxs = fetchContexts();
 		for (Iterator<Context> i = ctxs.iterator(); i.hasNext();) {
 			Context context = (Context) i.next();
 			contexts.put(context.getId(), context);
-			Log.i("GL", context.toString());
+			Logger.i(context.toString());
 		}
 		List<Receiver> recv = fetchReceivers();
 		for (Iterator<Receiver> i = recv.iterator(); i.hasNext();) {
 			Receiver r = (Receiver) i.next();
 			fetchReceiverImage(r);
 			receivers.put(r.getId(), r);
-			Log.i("GL", r.toString());
+			Logger.i(r.toString());
 		}
 	}
 	
@@ -95,7 +94,7 @@ public class GLClient {
 			con.setRequestMethod("GET");
 			Bitmap b = BitmapFactory.decodeStream(con.getInputStream());
 			r.setImage(b);
-			Log.i("GL", b.getConfig() + " image " + b.getHeight() + " x " + b.getWidth());
+			Logger.i(b.getConfig() + " image " + b.getHeight() + " x " + b.getWidth());
 		} catch( Exception e) {
 			e.printStackTrace();
 		}
@@ -103,7 +102,7 @@ public class GLClient {
 
 	private HttpURLConnection createConnection(String url) throws MalformedURLException, IOException {
 		URL u = new URL(url);
-		Log.i("GL", "URL-" + (++connection) + ": " + u.toString());
+		Logger.i("URL-" + (++connection) + ": " + u.toString());
 		HttpURLConnection con = (HttpURLConnection) u.openConnection();
 		con.setUseCaches(true);
 		//con.addRequestProperty("Cache-Control", "only-if-cached");
@@ -117,16 +116,16 @@ public class GLClient {
 		try {
 			HttpURLConnection con = createConnection(baseUrl + "/submission");
 			con.setRequestMethod("POST");
-			Log.i("GL","Submission: " + s.toJSON());
+			Logger.i("Submission: " + s.toJSON());
 			InputStream in = null;
 			try {
 	            con.getOutputStream().write(s.toJSON().getBytes());
 	            in = new BufferedInputStream(con.getInputStream());
             } catch (Exception e) {
             }
-			Log.i("GL","Start pargsing JSON");
+			Logger.i("Start pargsing JSON");
 			con.connect();
-			Log.i("GL", "Response: [" + con.getResponseCode() + "] " + con.getResponseMessage());
+			Logger.i("Response: [" + con.getResponseCode() + "] " + con.getResponseMessage());
 			return parser.parseSubmission(new InputStreamReader(in, "UTF-8"));
 		} catch( Exception e) {
 			e.printStackTrace();
@@ -144,7 +143,7 @@ public class GLClient {
 			InputStream in = null;
 			try {
 	            con.getOutputStream().write(s.toJSON().getBytes());
-	            Log.i("GL","Submission: " + s.toJSON());
+	            Logger.i("Submission: " + s.toJSON());
 			    in = new BufferedInputStream(con.getInputStream());
             } catch (Exception e) {
             	e.printStackTrace();
@@ -152,9 +151,9 @@ public class GLClient {
             }
 			
 			
-			Log.i("GL","Start pargsing JSON");
+			Logger.i("Start pargsing JSON");
 			//con.connect();
-		    Log.i("GL", "Response: [" + con.getResponseCode() + "] " + con.getResponseMessage());
+		    Logger.i("Response: [" + con.getResponseCode() + "] " + con.getResponseMessage());
 			return parser.parseSubmission(new InputStreamReader(in, "UTF-8"));
 		} catch( Exception e) {
 			e.printStackTrace();
@@ -204,7 +203,7 @@ public class GLClient {
             dataOS.flush();
             dataOS.close();
 
-            Log.i("GL", "Response: [" + con.getResponseCode() + "] " + con.getResponseMessage());
+            Logger.i("Response: [" + con.getResponseCode() + "] " + con.getResponseMessage());
             InputStream is = con.getInputStream();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             byte[] bytes = new byte[1024];
@@ -217,7 +216,7 @@ public class GLClient {
 
             is.close();
             String response = new String(bytesReceived);
-            Log.i("GL","uploade file: " + response);
+            Logger.i("uploade file: " + response);
         } catch (Exception e) {
         	e.printStackTrace();
         }
@@ -231,7 +230,7 @@ public class GLClient {
 		try {
 			HttpURLConnection con = createConnection(baseUrl + "/receivers");
 			InputStream in = new BufferedInputStream(con.getInputStream());
-			Log.i("GL","Start pargsing JSON");
+			Logger.i("Start pargsing JSON");
 			return parser.parseReceivers(new InputStreamReader(in, "UTF-8"));
 		} catch( Exception e) {
 			e.printStackTrace();
@@ -244,7 +243,7 @@ public class GLClient {
 		try {		    
 			HttpURLConnection con = createConnection(baseUrl + "/node");
 			InputStream in = new BufferedInputStream(con.getInputStream());
-			Log.i("GL","Start pargsing JSON");
+			Logger.i("Start pargsing JSON");
 			node = parser.parseNode(new InputStreamReader(in, "UTF-8"));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -258,7 +257,7 @@ public class GLClient {
 			con.setRequestMethod("GET");
 			Bitmap b = BitmapFactory.decodeStream(con.getInputStream());
 			node.setImage(b);
-			Log.i("GL", b.getConfig() + " image " + b.getHeight() + " x " + b.getWidth());
+			Logger.i(b.getConfig() + " image " + b.getHeight() + " x " + b.getWidth());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -269,7 +268,7 @@ public class GLClient {
 		try {
 			HttpURLConnection con = createConnection(baseUrl + "/contexts");
 			InputStream in = new BufferedInputStream(con.getInputStream());
-			Log.i("GL","Start pargsing JSON");
+			Logger.i("Start pargsing JSON");
 			return parser.parseContexts(new InputStreamReader(in, "UTF-8"));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -289,7 +288,7 @@ public class GLClient {
             }
             installCache(context);
         } catch (Exception e) {
-            Log.e("GL", "Error erasing cache", e);
+            Logger.e("Error erasing cache", e);
         }
     }
 }

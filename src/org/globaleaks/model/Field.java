@@ -4,8 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.util.Log;
-
+import org.globaleaks.util.Logger;
 
 public class Field {
 
@@ -136,7 +135,7 @@ public class Field {
 	public static FieldType getFieldType(String stringType) {
 		FieldType res = fieldNames.get(stringType);
 		if(res == null) {
-			Log.e("GL", "Unrecognized field type: " + stringType);
+			Logger.e("Unrecognized field type: " + stringType);
 		}
 		return res;
 	}
