@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.globaleaks.android.GLApplication;
+import org.globaleaks.gldroid.GLApplication;
 import org.globaleaks.model.Context;
 import org.globaleaks.model.File;
 import org.globaleaks.model.Node;

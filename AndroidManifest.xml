@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.globaleaks.android"
+    package="org.globaleaks.gldroid"
     android:versionCode="11"
     android:versionName="1.0" >
 
@@ -13,14 +13,14 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application 
-        android:name="org.globaleaks.android.GLApplication"
+        android:name="org.globaleaks.gldroid.GLApplication"
         android:allowBackup="true"
         android:icon="@drawable/globaleaks"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         android:uiOptions="splitActionBarWhenNarrow" >
         <activity
-            android:name="org.globaleaks.android.MainActivity"
+            android:name="org.globaleaks.gldroid.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,20 +29,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="org.globaleaks.android.CreateSubmissionActivity"
+            android:name="org.globaleaks.gldroid.CreateSubmissionActivity"
             android:label="@string/title_activity_create_submission"
-            android:parentActivityName="org.globaleaks.android.MainActivity" >
+            android:parentActivityName="org.globaleaks.gldroid.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.globaleaks.android.MainActivity" />
+                android:value="org.globaleaks.gldroid.MainActivity" />
         </activity>
         <activity
-            android:name="org.globaleaks.android.SettingsActivity"
+            android:name="org.globaleaks.gldroid.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName="org.globaleaks.android.MainActivity" >
+            android:parentActivityName="org.globaleaks.gldroid.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.globaleaks.android.MainActivity" />
+                android:value="org.globaleaks.gldroid.MainActivity" />
         </activity>
     </application>
 
