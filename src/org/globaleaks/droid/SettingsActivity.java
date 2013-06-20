@@ -1,6 +1,6 @@
 package org.globaleaks.droid;
 
-import org.globaleaks.gldroid.R;
+import org.globaleaks.droid.R;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;

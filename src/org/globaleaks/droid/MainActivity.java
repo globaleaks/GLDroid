@@ -1,6 +1,6 @@
 package org.globaleaks.droid;
 
-import org.globaleaks.gldroid.R;
+import org.globaleaks.droid.R;
 import org.globaleaks.model.Node;
 import org.globaleaks.util.GLClient;
 import org.globaleaks.util.Logger;

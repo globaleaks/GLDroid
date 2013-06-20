@@ -1,7 +1,7 @@
 package org.globaleaks.droid;
 
 import org.globaleaks.droid.ReceiversFragment.OnContextSelectedListener;
-import org.globaleaks.gldroid.R;
+import org.globaleaks.droid.R;
 import org.globaleaks.util.Logger;
 
 import android.app.ActionBar;

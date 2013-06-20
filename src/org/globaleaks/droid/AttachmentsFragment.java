@@ -2,7 +2,7 @@ package org.globaleaks.droid;
 
 import java.util.ArrayList;
 
-import org.globaleaks.gldroid.R;
+import org.globaleaks.droid.R;
 import org.globaleaks.model.File;
 import org.globaleaks.util.Logger;
 
