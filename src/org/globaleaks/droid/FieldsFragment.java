@@ -1,8 +1,9 @@
-package org.globaleaks.gldroid;
+package org.globaleaks.droid;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.globaleaks.gldroid.R;
 import org.globaleaks.model.Context;
 import org.globaleaks.model.Field;
 import org.globaleaks.model.FieldValue;

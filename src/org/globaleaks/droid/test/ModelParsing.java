@@ -1,4 +1,4 @@
-package org.globaleaks.gldroid.test;
+package org.globaleaks.droid.test;
 
 import java.io.StringReader;
 import java.util.List;

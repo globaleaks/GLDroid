@@ -1,8 +1,8 @@
-package org.globaleaks.gldroid;
+package org.globaleaks.droid;
 
 import java.util.Iterator;
 
-import org.globaleaks.gldroid.FieldsFragment.OnFieldValueChangedListener;
+import org.globaleaks.droid.FieldsFragment.OnFieldValueChangedListener;
 import org.globaleaks.model.Field;
 import org.globaleaks.model.Field.FieldType;
 import org.globaleaks.model.FieldValue;

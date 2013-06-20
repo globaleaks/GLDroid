@@ -1,4 +1,4 @@
-package org.globaleaks.gldroid;
+package org.globaleaks.droid;
 
 import java.util.ArrayList;
 import java.util.Iterator;

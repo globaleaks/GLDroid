@@ -1,4 +1,4 @@
-package org.globaleaks.gldroid.test;
+package org.globaleaks.droid.test;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

@@ -1,9 +1,10 @@
-package org.globaleaks.gldroid;
+package org.globaleaks.droid;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import org.globaleaks.gldroid.R;
 import org.globaleaks.model.Context;
 import org.globaleaks.model.Receiver;
 import org.globaleaks.util.Logger;

@@ -16,7 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.globaleaks.gldroid.GLApplication;
+import org.globaleaks.droid.GLApplication;
 import org.globaleaks.model.AuthSession;
 import org.globaleaks.model.Context;
 import org.globaleaks.model.Credential;

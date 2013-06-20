@@ -1,4 +1,4 @@
-package org.globaleaks.gldroid;
+package org.globaleaks.droid;
 
 import org.globaleaks.model.AuthSession;
 import org.globaleaks.model.Credential;
