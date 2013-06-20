@@ -1,11 +1,13 @@
 package org.globaleaks.util;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,7 +17,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.globaleaks.gldroid.GLApplication;
+import org.globaleaks.model.AuthSession;
 import org.globaleaks.model.Context;
+import org.globaleaks.model.Credential;
+import org.globaleaks.model.ErrorObject;
 import org.globaleaks.model.File;
 import org.globaleaks.model.Node;
 import org.globaleaks.model.Receiver;
@@ -38,6 +43,7 @@ public class GLClient {
 	private Parser parser = new Parser();
 	private int cache = 0;
 	private static int connection = 0;
+	private String sessionId = null;
 	
 	public GLClient(){
 		parser.setGLClient(this);
@@ -108,6 +114,9 @@ public class GLClient {
 		//con.addRequestProperty("Cache-Control", "only-if-cached");
 		
 		con.addRequestProperty("Cache-Control", "max-stale=" + cache);
+		if(sessionId != null) {
+			con.addRequestProperty("X-Session", sessionId);
+		}
 		return con;
 	}
 
@@ -159,7 +168,6 @@ public class GLClient {
 			e.printStackTrace();
 		}
 		return null;
-
 	}
 	
 	public void uploadFile(Tip t, File file){
@@ -222,8 +230,40 @@ public class GLClient {
         }
 	}
 	
-	public void fetchTip(String tipId) {
-		
+	
+	/*
+	{"files": [], "pertinence": "0", "im_whistleblower": true, 
+	"context_id": "da6f49d3-b641-4578-8c58-7226af77e2de", "access_limit": 42, 
+	"expiration_date": "2013-07-04T22:24:32.194926", "context_gus": "da6f49d3-b641-4578-8c58-7226af77e2de", 
+	"access_counter": 0, "creation_date": "1 hour", "escalation_threshold": "0", 
+	"last_activity": "2013-06-19T23:24:32.194960", "download_limit": 42, "im_receiver": false, 
+	"fields": {"Full description": "hbhghg", "Short title": "yhy"}, 
+	"mark": "first", "id": "325f94b5-e461-4ad9-adfc-5c91e6f9083d"}
+	*/
+	public Submission fetchTip() throws GLException {
+		try {
+			HttpURLConnection con = createConnection(baseUrl + "/tip/5b1ac954-2e4f-5e4d-4336-8bd2fe7acd0d");
+			con.setRequestMethod("GET");
+			con.setDoOutput(false);
+			con.connect();
+			InputStream in = null;
+			try {
+			    in = new BufferedInputStream(con.getInputStream());
+			    Logger.i("Response: [" + con.getResponseCode() + "] " + con.getResponseMessage());
+			    Submission submission = parser.parseSubmission(new InputStreamReader(in, "UTF-8"));
+				return submission;
+            } catch (Exception e) {
+    		    Logger.i("Response: [" + con.getResponseCode() + "] " + con.getResponseMessage());
+    		    in = new BufferedInputStream(con.getErrorStream());
+    		    ErrorObject eo = parser.parseError(new InputStreamReader(in, "UTF-8"));
+            	throw new GLException(eo);
+            } finally {
+            	if(in != null) in.close();
+            	con.disconnect();
+            }
+		} catch( Exception e) {
+			throw new GLException();
+		}
 	}
 	
 	private List<Receiver> fetchReceivers() {
@@ -291,4 +331,60 @@ public class GLClient {
             Logger.e("Error erasing cache", e);
         }
     }
+    
+	public AuthSession login(Credential credential) throws GLException {
+		try {
+			HttpURLConnection con = createConnection(baseUrl + "/authentication");
+			con.setRequestMethod("POST");
+			con.setDoOutput(true);
+			con.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+			con.connect();
+			InputStream in = null;
+			try {
+	            con.getOutputStream().write(credential.toJSON().getBytes());
+	            Logger.i("Submission: " + credential.toJSON());
+			    in = new BufferedInputStream(con.getInputStream());
+			    Logger.i("Response: [" + con.getResponseCode() + "] " + con.getResponseMessage());
+				AuthSession session = parser.parseAuthSession(new InputStreamReader(in, "UTF-8"));
+				sessionId = session.getSessionId();
+				return session;
+            } catch (Exception e) {
+    		    Logger.i("Response: [" + con.getResponseCode() + "] " + con.getResponseMessage());
+    		    in = new BufferedInputStream(con.getErrorStream());
+    		    ErrorObject eo = parser.parseError(new InputStreamReader(in, "UTF-8"));
+            	throw new GLException(eo);
+            } finally {
+            	if(in != null) in.close();
+            	con.disconnect();
+            }
+		} catch( Exception e) {
+			throw new GLException();
+		}
+	}
+
+	public void logout() throws GLException {
+		try {
+			HttpURLConnection con = createConnection(baseUrl + "/authentication");
+			con.setRequestMethod("DELETE");
+			con.setDoOutput(false);
+			con.connect();
+			InputStream in = null;
+			try {
+			    in = new BufferedInputStream(con.getInputStream());
+			    Logger.i("Response: [" + con.getResponseCode() + "] " + con.getResponseMessage());
+			    sessionId = null;
+            } catch (Exception e) {
+    		    Logger.i("Response: [" + con.getResponseCode() + "] " + con.getResponseMessage());
+    		    in = new BufferedInputStream(con.getErrorStream());
+    		    ErrorObject eo = parser.parseError(new InputStreamReader(in, "UTF-8"));
+            	throw new GLException(eo);
+            } finally {
+            	if(in != null) in.close();
+            	con.disconnect();
+            }
+		} catch( Exception e) {
+			throw new GLException();
+		}
+	}
+
 }

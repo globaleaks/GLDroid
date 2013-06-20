@@ -1,16 +1,23 @@
 package org.globaleaks.gldroid;
 
+import org.globaleaks.model.Credential;
 import org.globaleaks.model.Node;
 import org.globaleaks.util.GLClient;
+import org.globaleaks.util.GLException;
+import org.globaleaks.util.Logger;
 
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.net.http.HttpResponseCache;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
+import android.telephony.PhoneNumberUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,10 +31,11 @@ public class MainActivity extends Activity  {
 	private TextView name;
 	private TextView description;
 	
+	private final static int PICK_RECEIPT  = 1;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Intent i = getIntent();
 		setContentView(R.layout.activity_main);
 		findViewById(android.R.id.home).setPadding(10, 1, 10, 1);
 		View mainLayout = findViewById(R.id.main_layout);
@@ -61,7 +69,7 @@ public class MainActivity extends Activity  {
 				intent = new Intent(this, CreateSubmissionActivity.class);
 				break;
 			case R.id.action_view:
-				
+				pickReceipt();
 				break;
 			case R.id.action_settings:
 				intent = new Intent(this, SettingsActivity.class);
@@ -72,6 +80,51 @@ public class MainActivity extends Activity  {
 		}
 		if(intent != null) startActivity(intent);
 		return super.onMenuItemSelected(featureId, item);
+	}
+
+	private void pickReceipt() {
+		Intent i = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
+		startActivityForResult(i, PICK_RECEIPT);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(data == null) {
+			Logger.i("No intent data returned");
+			return;
+		}
+		switch (requestCode) {
+			case PICK_RECEIPT:
+				showTip(data.getData());
+				break;
+	
+			default:
+				break;
+		}
+	}
+
+	private void showTip(Uri uri) {
+		String number = null;
+		Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+		if(cursor != null) {
+			try {
+				cursor.moveToNext();
+				String[] names = cursor.getColumnNames();
+				Logger.i(names.toString());
+				int numIdx = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER);
+				number = cursor.getString(numIdx);
+				number = PhoneNumberUtils.stripSeparators(number);
+				Logger.i("receipt number: " + number);
+			} finally {
+				cursor.close();
+			}
+		}
+		if(number == null) {
+			Logger.e("No receipt number retrieved");
+			return;
+		}
+		GLApplication app = (GLApplication) getApplication();
+		new FetchTipTask(this).execute(number);
 	}
 
 	private void refresh(final boolean eraseCache) {

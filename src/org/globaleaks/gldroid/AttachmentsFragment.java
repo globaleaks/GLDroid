@@ -26,8 +26,6 @@ import android.widget.Toast;
 
 public class AttachmentsFragment extends Fragment implements SubmissionFragment {
 	
-    private static final int CODE_SELECT_IMG = 0;
-    private static final int CODE_TAKE_IMG   = 1;
     private static final String TMP_IMAGE = "globaleaks.jpg";
     
     private Uri uriImageResult;
@@ -77,7 +75,7 @@ public class AttachmentsFragment extends Fragment implements SubmissionFragment 
 	            uriImageResult = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 	            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 	            intent.putExtra( MediaStore.EXTRA_OUTPUT, uriImageResult);
-	            startActivityForResult(intent, CODE_TAKE_IMG);
+	            startActivityForResult(intent, CreateSubmissionActivity.REQUEST_TAKE_IMG);
 			}
 		});
 		final Button selectPhoto = (Button) rootView.findViewById(R.id.selectPictureButton);
@@ -88,7 +86,7 @@ public class AttachmentsFragment extends Fragment implements SubmissionFragment 
 	            try {
 	                Intent intent = new Intent(Intent.ACTION_PICK);
 	                intent.setType("image/*");
-	                startActivityForResult(intent, CODE_SELECT_IMG);
+	                startActivityForResult(intent, CreateSubmissionActivity.REQUEST_SELECT_IMG);
 	            } catch (Exception e) {
 	                Toast.makeText(getActivity(), "Unable to open Gallery", Toast.LENGTH_LONG).show();
 	                Logger.e("Error loading gallery to select image: " + e.getMessage(), e);
@@ -101,7 +99,7 @@ public class AttachmentsFragment extends Fragment implements SubmissionFragment 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == CODE_SELECT_IMG) {
+            if (requestCode == CreateSubmissionActivity.REQUEST_SELECT_IMG) {
                 if (data != null) {
                     uriImageResult = data.getData();
                     if (uriImageResult != null){
@@ -113,7 +111,7 @@ public class AttachmentsFragment extends Fragment implements SubmissionFragment 
                 } else {
                     Toast.makeText(getActivity(), "Unable to load photo.", Toast.LENGTH_LONG).show();
                 }
-            } else if (requestCode == CODE_TAKE_IMG) {
+            } else if (requestCode == CreateSubmissionActivity.REQUEST_TAKE_IMG) {
                 addPicture(new File(uriImageResult));
             }
         } 

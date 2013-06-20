@@ -1,10 +1,12 @@
 package org.globaleaks.gldroid;
 
 import org.globaleaks.gldroid.ReceiversFragment.OnContextSelectedListener;
+import org.globaleaks.util.Logger;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -23,6 +25,10 @@ implements ActionBar.TabListener, OnContextSelectedListener
 	SectionsPagerAdapter pagerAdapter;
 	ViewPager pager;
     
+    public static final int REQUEST_SELECT_IMG    = 0;
+    public static final int REQUEST_TAKE_IMG      = 1;
+	public final static int REQUEST_STORE_RECEIPT = 2;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -132,4 +138,13 @@ implements ActionBar.TabListener, OnContextSelectedListener
 		ff.refreshFields();
 	}
 
+	@Override
+	protected void onActivityResult(int request, int result, Intent data) {
+		if(request == REQUEST_STORE_RECEIPT) {
+			Logger.i("Got back");
+			finish();
+		} else {
+			super.onActivityResult(request, result, data);
+		}
+	}
 }

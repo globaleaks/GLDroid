@@ -7,12 +7,15 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.globaleaks.model.AuthSession;
 import org.globaleaks.model.Context;
+import org.globaleaks.model.ErrorObject;
 import org.globaleaks.model.Field;
 import org.globaleaks.model.Node;
 import org.globaleaks.model.Option;
@@ -22,10 +25,8 @@ import org.globaleaks.model.Submission;
 import android.util.JsonReader;
 
 public class Parser {
-    // 2013-06-09T19:39:30.369690
-    public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS",Locale.UK);
-	//public static DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy",Locale.UK);
-	
+
+	private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS",Locale.UK);
 	private GLClient client;
 	
 	public List<Context> parseContexts(Reader in) throws UnsupportedEncodingException, IOException {
@@ -244,58 +245,121 @@ public class Parser {
 
 	public Submission parseSubmission(Reader in) throws IOException, ParseException {
 		JsonReader reader = new JsonReader(in);
-		Submission s = new Submission();
-		/*
-		{"wb_fields": {"Full description": "ijhubb", "Short title": "jjhjjv"}, "pertinence": "0", 
-		"receivers": ["24845644-3c6a-488d-b748-5aa15933a0e5", "1e61def9-f031-451b-be68-f177d9f477f6", "fb61111d-1259-47d2-ad0a-69b2d23f801c"], 
-		"expiration_date": "2013-06-24T23:39:58.218079", "access_limit": 42, "receipt": "8030426621", "context_gus": "281ba696-c414-4782-8b51-43c709fb1efc", 
-		"creation_date": "2013-06-10T00:39:58.218114", "escalation_threshold": "0", "download_limit": 42, "submission_gus": "7f4e24fd-51f2-4fe7-bedc-4f8e77e424f1", 
-		"mark": "finalize", "id": "7f4e24fd-51f2-4fe7-bedc-4f8e77e424f1", "files": ["cc0e6ca9-ae69-4957-9983-9c96ca20518a"]}		
-		*/
-		reader.beginObject();
-		while(reader.hasNext()){
-			String name = reader.nextName();
-			if(name.equals("error_message")) {
-				throw new ParseException(reader.nextString(), 0);
-			} else if(name.equals("pertinence")){
-				s.setPertinance(reader.nextInt());
-			} else if (name.equals("access_limit")){
-				s.setAccessLimit(reader.nextInt());
-			} else if (name.equals("receipt")) {
-				s.setReceipt(reader.nextString());
-			} else if (name.equals("context_gus")) {
-				s.setCtx(client.contexts.get(reader.nextString()));
-			} else if(name.equals("creation_date")) {
-				s.setCreationDate(dateFormat.parse(reader.nextString()));
-			} else if(name.equals("escalation_threshold")){
-				s.setEscalationThreshold(reader.nextInt());
-			} else if(name.equals("download_limit")){
-				s.setDownloadLimit(reader.nextInt());
-			} else if(name.equals("submission_gus")){
-				s.setId(reader.nextString());
-			} else if(name.equals("id")){
-				s.setId(reader.nextString());
-			} else if(name.equals("mark")){
-				s.setMark(reader.nextString());
-			} else if(name.equals("receivers")) {
-				reader.beginArray();
-				while(reader.hasNext()) {
-					String id = reader.nextString();
-					s.addReceiver(client.receivers.get(id));
+		try {
+			Submission s = new Submission();
+			/*
+			{"wb_fields": {"Full description": "ijhubb", "Short title": "jjhjjv"}, "pertinence": "0", 
+			"receivers": ["24845644-3c6a-488d-b748-5aa15933a0e5", "1e61def9-f031-451b-be68-f177d9f477f6", "fb61111d-1259-47d2-ad0a-69b2d23f801c"], 
+			"expiration_date": "2013-06-24T23:39:58.218079", "access_limit": 42, "receipt": "8030426621", "context_gus": "281ba696-c414-4782-8b51-43c709fb1efc", 
+			"creation_date": "2013-06-10T00:39:58.218114", "escalation_threshold": "0", "download_limit": 42, "submission_gus": "7f4e24fd-51f2-4fe7-bedc-4f8e77e424f1", 
+			"mark": "finalize", "id": "7f4e24fd-51f2-4fe7-bedc-4f8e77e424f1", "files": ["cc0e6ca9-ae69-4957-9983-9c96ca20518a"]}		
+			*/
+			reader.beginObject();
+			while(reader.hasNext()){
+				String name = reader.nextName();
+				if(name.equals("error_message")) {
+					throw new ParseException(reader.nextString(), 0);
+				} else if(name.equals("pertinence")){
+					s.setPertinance(reader.nextInt());
+				} else if (name.equals("access_limit")){
+					s.setAccessLimit(reader.nextInt());
+				} else if (name.equals("receipt")) {
+					s.setReceipt(reader.nextString());
+				} else if (name.equals("context_gus")) {
+					s.setCtx(client.contexts.get(reader.nextString()));
+				} else if(name.equals("creation_date")) {
+					s.setCreationDate(parseDate(reader.nextString()));
+				} else if(name.equals("escalation_threshold")){
+					s.setEscalationThreshold(reader.nextInt());
+				} else if(name.equals("download_limit")){
+					s.setDownloadLimit(reader.nextInt());
+				} else if(name.equals("submission_gus")){
+					s.setId(reader.nextString());
+				} else if(name.equals("id")){
+					s.setId(reader.nextString());
+				} else if(name.equals("mark")){
+					s.setMark(reader.nextString());
+				} else if(name.equals("receivers")) {
+					reader.beginArray();
+					while(reader.hasNext()) {
+						String id = reader.nextString();
+						s.addReceiver(client.receivers.get(id));
+					}
+					reader.endArray();
+				} else {
+					reader.skipValue();
 				}
-				reader.endArray();
-			} else {
-				reader.skipValue();
 			}
+			reader.endObject();
+			return s;
+		} finally {
+			reader.close();
 		}
-		reader.endObject();
+	}
 
-		return s;
+	/**
+		{"error_message": "Authentication Failed", "error_code": 29}
+	 */
+	public ErrorObject parseError(Reader in) throws IOException, ParseException {
+		JsonReader reader = new JsonReader(in);
+		try {
+			ErrorObject error = new ErrorObject();
+			reader.beginObject();
+			while(reader.hasNext()){
+				String name = reader.nextName();
+				if(name.equals("error_message")) {
+					error.setMessage(reader.nextString());
+				} else if(name.equals("error_code")){
+					error.setCode(reader.nextInt());
+				} else {
+					reader.skipValue();
+				}
+			}
+			reader.endObject();
+			return error;
+		} finally {
+			reader.close();
+		}
 	}
 
 
+	/**
+		{"error_message": "Authentication Failed", "error_code": 29}
+	 */
+	public AuthSession parseAuthSession(Reader in) throws IOException  {
+		JsonReader reader = new JsonReader(in);
+		try {
+			AuthSession session = new AuthSession();
+			reader.beginObject();
+			while(reader.hasNext()){
+				String name = reader.nextName();
+				if(name.equals("user_id")) {
+					session.setUserId(reader.nextString());
+				} else if(name.equals("session_id")){
+					session.setSessionId(reader.nextString());
+				} else {
+					reader.skipValue();
+				}
+			}
+			reader.endObject();
+			return session;
+		} finally {
+			reader.close();
+		}
+	}
+
 	public void setGLClient(GLClient glClient) {
 		this.client = glClient;
+	}
+
+
+	public static Date parseDate(String date) {
+		try {
+			return dateFormat.parse(date);
+		} catch (ParseException e) {
+			Logger.e("Wrong datetime format: " + date);
+			return null;
+		}
 	}
 
 }

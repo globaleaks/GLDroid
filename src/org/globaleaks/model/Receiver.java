@@ -75,7 +75,7 @@ public class Receiver extends Item {
 		this.creationDate = creationDate;
 	}
 	public void setCreationDate(String creationDate) throws ParseException {
-		setCreationDate(Parser.dateFormat.parse(creationDate));
+		setCreationDate(Parser.parseDate(creationDate));
 	}
 	public Date getUpdateDate() {
 		return updateDate;
@@ -84,7 +84,7 @@ public class Receiver extends Item {
 		this.updateDate = updateDate;
 	}
 	public void setUpdateDate(String updateDate) throws ParseException {
-		setUpdateDate(Parser.dateFormat.parse(updateDate));
+		setUpdateDate(Parser.parseDate(updateDate));
 	}
 	public int getReceiverLevel() {
 		return receiverLevel;
