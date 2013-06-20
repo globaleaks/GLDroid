@@ -1,9 +1,7 @@
 package org.globaleaks.gldroid;
 
-import org.globaleaks.model.Credential;
 import org.globaleaks.model.Node;
 import org.globaleaks.util.GLClient;
-import org.globaleaks.util.GLException;
 import org.globaleaks.util.Logger;
 
 import android.app.Activity;
@@ -148,23 +146,34 @@ public class MainActivity extends Activity  {
 
         @Override
         protected Node doInBackground(Application...params) {
-            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(params[0]);
-            String url = pref.getString("base_url", GLClient.DEMO_GLOBALEAKS);
-            int cache = 60*60*24;
-            try {
-                String c = pref.getString("cache_data", Integer.toString(cache));
-                cache = Integer.parseInt(c);
-            } catch (Exception e) {
-            }
-
-            gl.setBaseUrl(url, params[0].getApplicationContext());
-            gl.setCacheExpiration(cache);
-            gl.fetchMetadata();
-            return gl.node;
+        	try {
+	            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(params[0]);
+	            String url = pref.getString("base_url", GLClient.DEMO_GLOBALEAKS);
+	            int cache = 60*60*24;
+	            try {
+	                String c = pref.getString("cache_data", Integer.toString(cache));
+	                cache = Integer.parseInt(c);
+	            } catch (Exception e) {
+	            }
+	
+	            gl.setBaseUrl(url, params[0].getApplicationContext());
+	            gl.setCacheExpiration(cache);
+	            gl.fetchMetadata();
+	            return gl.node;
+        	} catch (Exception e) {
+        		return null;
+        	}
         }
 
         @Override
         protected void onPostExecute(Node result) {
+        	if(result == null) {
+        		result = new Node();
+        		result.setName("ERROR!");
+        		result.setDescription("Cannot connect to GlobaLeaks node \"" + MainActivity.gl.getBaseUrl() + 
+        				"\". Is it the right URL? Edit GLDroid settings, prepend \"http://\" or \"https://\" protocol and verify " +
+        				"that your node is up and running.");
+        	}
             onCompleteMetadata(result);
         }
     }

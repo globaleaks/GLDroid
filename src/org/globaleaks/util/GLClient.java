@@ -55,9 +55,11 @@ public class GLClient {
 
 	public void setBaseUrl(String baseUrl, android.content.Context context) {
 		this.baseUrl = baseUrl;
+		/*
 		if(!baseUrl.startsWith("http")) {
 			this.baseUrl = DEMO_GLOBALEAKS;
 		}
+		*/
 		node = null;
 		contexts.clear();
 		receivers.clear();
