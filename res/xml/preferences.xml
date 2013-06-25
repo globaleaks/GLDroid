@@ -3,7 +3,7 @@
   xmlns:android="http://schemas.android.com/apk/res/android">
     <EditTextPreference android:title="@string/settings_glsite_title" 
         android:key="base_url" 
-        android:defaultValue="demo.globaleaks.org"
+        android:defaultValue="http://demo.globaleaks.org:8083"
         android:inputType="textUri"/>
     
     <CheckBoxPreference android:title="@string/settings_tor_title" 

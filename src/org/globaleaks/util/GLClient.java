@@ -1,15 +1,15 @@
 package org.globaleaks.util;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.globaleaks.droid.GLApplication;
+import org.globaleaks.droid.MainActivity;
 import org.globaleaks.model.AuthSession;
 import org.globaleaks.model.Context;
 import org.globaleaks.model.Credential;
@@ -44,9 +45,14 @@ public class GLClient {
 	private int cache = 0;
 	private static int connection = 0;
 	private String sessionId = null;
+	private boolean torEnabled = false;
 	
 	public GLClient(){
 		parser.setGLClient(this);
+	}
+	
+	public void setTor(boolean enabled) {
+		torEnabled = enabled;
 	}
 	
 	public String getBaseUrl() {
@@ -111,7 +117,14 @@ public class GLClient {
 	private HttpURLConnection createConnection(String url) throws MalformedURLException, IOException {
 		URL u = new URL(url);
 		Logger.i("URL-" + (++connection) + ": " + u.toString());
-		HttpURLConnection con = (HttpURLConnection) u.openConnection();
+		HttpURLConnection con = null;
+		if(torEnabled) {
+			Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(MainActivity.PROXY_HOST, MainActivity.PROXY_PORT_SOCKS));
+			con = (HttpURLConnection) u.openConnection(proxy);
+		} else {
+			con = (HttpURLConnection) u.openConnection();	
+		}
+		
 		con.setUseCaches(true);
 		//con.addRequestProperty("Cache-Control", "only-if-cached");
 		

@@ -1,14 +1,22 @@
 package org.globaleaks.droid;
 
-import org.globaleaks.droid.R;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import org.globaleaks.model.Node;
 import org.globaleaks.util.GLClient;
 import org.globaleaks.util.Logger;
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Application;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.net.http.HttpResponseCache;
@@ -25,10 +33,12 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity  {
 
+	private static final String  TOR_PACKAGE = "org.torproject.android";
 	public static GLClient gl = new GLClient();
 	private ImageView logo;
 	private TextView name;
 	private TextView description;
+	private ImageView torStatus;
 	
 	private final static int PICK_RECEIPT  = 1;
 	
@@ -36,12 +46,20 @@ public class MainActivity extends Activity  {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		findViewById(android.R.id.home).setPadding(10, 1, 10, 1);
+		findViewById(android.R.id.home).setPadding(1, 1, 10, 1);
 		View mainLayout = findViewById(R.id.main_layout);
 		logo = (ImageView) mainLayout.findViewById(R.id.node_logo);
 		name = (TextView) mainLayout.findViewById(R.id.node_name);
 		description = (TextView) mainLayout.findViewById(R.id.node_description);
 		setTitle(R.string.title_activity_main);
+		ActionBar bar = getActionBar();
+		torStatus = new ImageView(getApplicationContext());
+		refreshTorStatus();
+		torStatus.setPadding(5, 5, 5, 5);
+		bar.setCustomView(torStatus);
+		bar.setDisplayShowCustomEnabled(true);
+		bar.setDisplayShowTitleEnabled(true);
+		bar.setDisplayShowTitleEnabled(true);
 		refresh(false);
 	}
 
@@ -65,9 +83,11 @@ public class MainActivity extends Activity  {
 		Intent intent = null;
 		switch (item.getItemId()) {
 			case R.id.action_create:
+				if(!checkTor()) return true;
 				intent = new Intent(this, CreateSubmissionActivity.class);
 				break;
 			case R.id.action_view:
+				if(!checkTor()) return true;
 				pickReceipt();
 				break;
 			case R.id.action_settings:
@@ -122,11 +142,11 @@ public class MainActivity extends Activity  {
 			Logger.e("No receipt number retrieved");
 			return;
 		}
-		GLApplication app = (GLApplication) getApplication();
 		new FetchTipTask(this).execute(number);
 	}
 
 	private void refresh(final boolean eraseCache) {
+		if(!checkTor()) return;
 	    name.setText(R.string.title_node_loading);
 	    description.setText("...");
         if(eraseCache)
@@ -178,4 +198,141 @@ public class MainActivity extends Activity  {
             onCompleteMetadata(result);
         }
     }
+    
+	public static final int PROXY_PORT_HTTP  = 8118;
+	public static final int PROXY_PORT_SOCKS = 9050;
+	public static final String PROXY_HOST    = "127.0.0.1";
+	
+	private boolean isTorInstalled() {
+        PackageManager pm = getPackageManager();
+        try {
+            ApplicationInfo ai = pm.getApplicationInfo("org.torproject.android", PackageManager.GET_META_DATA);
+            return true;
+        } catch (Exception e) {
+        	// not orbot package installed
+        	return false;
+        }
+    }
+
+    private boolean isTorProxyRunning() {
+    	BufferedReader reader = null;
+    	try {
+            Runtime r = Runtime.getRuntime();
+            Process p = r.exec("/system/bin/netstat -tln");
+            reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line = null;
+            while((line = reader.readLine()) != null) {
+            	if(line.contains("127.0.0.1:9050")) return true;
+            }
+            return false;
+        } catch (Exception e) {
+        	// no proxy running
+        	return false;
+        } finally {
+        	try {
+				reader.close();
+			} catch (IOException e) {
+			}
+        }
+    }
+    
+    private boolean isTorEnabled() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean tor = sp.getBoolean(getResources().getString(R.string.settings_tor_key), false);
+        return tor;
+    }
+
+    public boolean torProxy() {
+        return isTorEnabled() && isTorInstalled() && isTorProxyRunning();
+    }
+
+    private void refreshTorStatus() {
+    	/*
+        if(isTorInstalled() && isTorEnabled()) {
+            torStatus.setVisibility(ImageView.VISIBLE);
+        } else {
+            torStatus.setVisibility(ImageView.INVISIBLE);
+        }
+        */
+        int iconId = R.drawable.tor_off;
+        if(torProxy()) {
+            iconId = R.drawable.tor_on;
+        }
+        torStatus.setImageDrawable(getResources().getDrawable(iconId));
+        gl.setTor(isTorEnabled());
+    }
+
+    private boolean checkTor() {
+    	boolean enabled = validateTorConfiguration();
+    	refreshTorStatus();
+    	return enabled;
+    }
+    
+    private boolean validateTorConfiguration() {
+    	if(!isTorEnabled()) {
+    		// TOR disabled => continue
+    		return true;
+    	}
+		if(!isTorInstalled()) {
+			AlertDialog dialog = new AlertDialog.Builder(this)
+				.setTitle("Secure communication")
+				.setMessage("Your configuration requires to proxy your traffic through TOR in order to provide you best security and anonimity. "
+						  + "Install it now before continuing or, if you know what you are doing, disable it in Settings")
+				.setPositiveButton("Install", new DialogInterface.OnClickListener(){
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						installTor();
+					}
+				})
+				.setNegativeButton("Disable", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						disableTor();
+					}
+				})
+				.create();
+			dialog.show();
+			return false;
+		}
+		if(!isTorProxyRunning()) {
+			AlertDialog dialog = new AlertDialog.Builder(this)
+				.setTitle("Secure communication")
+				.setMessage("Your configuration requires to proxy your traffic through TOR in order to provide you best security and anonimity. "
+						  + "TOR is installed but is not running: start it or, if you know what you are doing, disable it in Settings")
+				.setPositiveButton("Start", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						startTor();
+					}})
+				.setNegativeButton("Disable", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						disableTor();
+					}
+				})
+				.create();
+			dialog.show();
+			return false;
+		}
+		return true;
+    }
+    
+    private void disableTor() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        sp.edit().putBoolean(getResources().getString(R.string.settings_tor_key), false).commit();
+    }
+    
+    private void installTor() {
+        Uri uri = Uri.parse("market://search?q=pname:" + TOR_PACKAGE);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
+
+    }
+    
+    private void startTor() {
+        Intent intent = new Intent(TOR_PACKAGE);
+        intent.setAction("org.torproject.android.START_TOR");
+        startActivityForResult(intent, 1);
+    }
+
 }
