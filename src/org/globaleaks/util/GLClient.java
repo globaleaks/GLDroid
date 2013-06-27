@@ -34,8 +34,8 @@ import android.net.http.HttpResponseCache;
 
 public class GLClient {
 
-	public static final String DEMO_GLOBALEAKS = "http://demo.globaleaks.org:8083";
-	public static final String DEV_GLOBALEAKS = "http://dev.globaleaks.org:8082";
+	public static final String DEMO_GLOBALEAKS = "http://demo.globaleaks.org:8082";
+	public static final String DEV_GLOBALEAKS = "http://dev.globaleaks.org:8083";
 	
 	public String baseUrl;
 	public Node node;
@@ -119,7 +119,8 @@ public class GLClient {
 		Logger.i("URL-" + (++connection) + ": " + u.toString());
 		HttpURLConnection con = null;
 		if(torEnabled) {
-			Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(MainActivity.PROXY_HOST, MainActivity.PROXY_PORT_SOCKS));
+			//Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(MainActivity.PROXY_HOST, MainActivity.PROXY_PORT_SOCKS));
+			Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(MainActivity.PROXY_HOST, MainActivity.PROXY_PORT_HTTP));
 			con = (HttpURLConnection) u.openConnection(proxy);
 		} else {
 			con = (HttpURLConnection) u.openConnection();	
