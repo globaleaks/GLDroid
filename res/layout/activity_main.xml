@@ -16,23 +16,25 @@
 	        android:id="@+id/node_logo"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
+	        android:contentDescription="NodeLogo"
+	        android:layout_weight="2"
 	        android:src="@drawable/globaleaks" />
 	
 	    <LinearLayout
 	        android:layout_width="fill_parent"
 	        android:layout_height="fill_parent"
+	        android:layout_weight="2"
 	        android:orientation="vertical"
 	        android:padding="13dip" >
-	
 	
 		    <TextView
 		        android:id="@+id/node_name"
 		        android:layout_width="fill_parent"
 		        android:layout_height="wrap_content"
 		        android:padding="3dip"
-		        android:textStyle="bold"
-		        android:textSize="30dip" 
-		        android:text="@string/title_node_loading"/>
+		        android:text="@string/title_node_loading"
+		        android:textSize="30dip"
+		        android:textStyle="bold" />
 			
 			<TextView 
 			    android:id="@+id/node_description"

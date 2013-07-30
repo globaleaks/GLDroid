@@ -141,6 +141,7 @@ public class GLClient {
 		try {
 			HttpURLConnection con = createConnection(baseUrl + "/submission");
 			con.setRequestMethod("POST");
+			con.setRequestProperty("Content-Type", "application/json");
 			Logger.i("Submission: " + s.toJSON());
 			InputStream in = null;
 			try {
@@ -163,6 +164,7 @@ public class GLClient {
 		try {
 			HttpURLConnection con = createConnection(baseUrl + "/submission/" + s.getId());
 			con.setRequestMethod("PUT");
+			con.setRequestProperty("Content-Type", "application/json");
 			con.setDoOutput(true);
 			con.connect();
 			InputStream in = null;
@@ -190,30 +192,19 @@ public class GLClient {
 		throw new RuntimeException("Not implemented yet");
 	}
 	public void uploadFile(GLApplication app, Submission s, File file){
-		String boundary = "----" + System.currentTimeMillis()+"----";
 		try {
-			
-            String disposition = "Content-Disposition: form-data; name=\"files[]\"; filename=\"" + file.getName() + "\"";
-            String type = "Content-Type: " + file.getMimetype();
-            StringBuffer requestBody = new StringBuffer();
-            requestBody.append("--");
-            requestBody.append(boundary);
-            requestBody.append("\r\n");
-            requestBody.append(disposition);
-            requestBody.append("\r\n");
-            requestBody.append(type);
-            requestBody.append("\r\n\r\n");
-            
             HttpURLConnection con = createConnection(baseUrl + "/submission/" + s.getId() + "/file");
             con.setDoOutput(true);
             con.setDoInput(true);
             con.setUseCaches(false);
             con.setRequestMethod("POST");
-            con.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+            con.setRequestProperty("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+            con.setRequestProperty("Content-Type", file.getMimetype());
+            
+            InputStream iss = app.getContentResolver().openInputStream(file.getUri());
+            con.setRequestProperty("Content-Length", Integer.toString(iss.available()));
 
             DataOutputStream dataOS = new DataOutputStream(con.getOutputStream());
-            dataOS.writeBytes(requestBody.toString());
-            InputStream iss = app.getContentResolver().openInputStream(file.getUri());
             BufferedInputStream bis = new BufferedInputStream(iss);
             byte[] buf = new byte[1024];
             while(bis.available() > 0) {
@@ -221,9 +212,6 @@ public class GLClient {
             	dataOS.write(buf,0,read);
             }
             bis.close();
-            dataOS.write("\r\n--".getBytes());
-            dataOS.write(boundary.getBytes());
-            dataOS.write("--\r\n".getBytes());
             dataOS.flush();
             dataOS.close();
 
